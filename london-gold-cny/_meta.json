@@ -1,0 +1,6 @@
+{
+  "slug": "london-gold-cny",
+  "version": "1.0.0",
+  "author": "基于 jisuapi/gold 改造",
+  "description": "伦敦金价格查询 - 人民币/克单位转换"
+}
