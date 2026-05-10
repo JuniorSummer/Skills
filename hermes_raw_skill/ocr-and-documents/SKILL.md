@@ -160,12 +160,97 @@ No extra dependencies needed — pymupdf covers split, merge, search, and text e
 
 ---
 
+## Detecting Scanned PDFs (IMPORTANT — do this first!)
+
+Always check if a PDF has extractable text before choosing an extractor. Scanned PDFs return empty strings with pymupdf — don't waste time trying multiple pages:
+
+```python
+import pymupdf
+doc = pymupdf.open('document.pdf')
+# Check 3-5 scattered pages
+for i in [0, 5, 10, min(20, doc.page_count-1)]:
+    text = doc[i].get_text().strip()
+    if text:
+        print(f"Page {i}: {len(text)} chars — text-based PDF, use pymupdf")
+        break
+else:
+    print("All pages empty — scanned PDF, needs OCR (marker-pdf)")
+```
+
+If all checked pages are empty → scanned PDF → go directly to marker-pdf. Don't try pymupdf4llm.
+
+## marker-pdf First Run — Expect Long Download
+
+**First run downloads ~2.7GB+ of models** (multiple safetensors files). Actual timing from real sessions:
+- 1.35GB main model: ~12 min at ~2MB/s
+- 1.34GB second model: can be much slower (~350kB/s = ~1 hour)
+- Additional smaller models: text_recognition, layout detection, etc.
+
+**Total first-run time: 15-60+ minutes** depending on connection speed.
+
+**User management:** Always warn the user before starting marker-pdf for the first time:
+> "需要下载OCR模型（约2.7GB），预计需要X分钟。是否继续？"
+
+Consider running as background process with `notify_on_complete=true` so the user can do other work.
+
+**After first run:** Models are cached at `~/.cache/huggingface/` and `~/.cache/datalab/models/`. Subsequent runs are fast (~1-14s/page on CPU).
+
+## marker-pdf Memory Requirements & OOM Pitfall
+
+**marker-pdf needs 4GB+ free RAM.** It loads PyTorch + multiple models simultaneously. Systems with ≤4GB total RAM will get OOM-killed (exit code 137).
+
+**Symptoms of OOM:**
+- Process exits with code 137 (SIGKILL)
+- `dmesg | grep -i oom` shows "Out of memory: Kill process"
+- Process runs for a while then silently dies
+
+**Check before running:**
+```bash
+free -h  # Need 4GB+ available (not just total)
+```
+
+## Fallback: pymupdf + vision_analyze for Low-Memory OCR
+
+When marker-pdf OOMs or the system has <4GB RAM, use this alternative approach:
+
+```python
+import pymupdf
+
+doc = pymupdf.open('scanned.pdf')
+# Extract pages as images
+for i in range(doc.page_count):
+    page = doc[i]
+    pix = page.get_pixmap(dpi=150)  # 150dpi = good balance of quality/speed
+    pix.save(f'/tmp/page_{i:04d}.jpg')
+```
+
+Then use `vision_analyze` on the extracted images:
+```
+vision_analyze(image_url="/tmp/page_0001.jpg", question="识别这张图片中的所有文字")
+```
+
+**For large PDFs (50+ pages):** Use `delegate_task` with parallel batches:
+- Split pages into batches of ~40-50 images each
+- Run 3 concurrent subagents with `toolsets: ["vision", "file"]`
+- Each subagent analyzes its batch and saves to a file
+- Parent reads all batch files and synthesizes
+
+**Trade-offs vs marker-pdf:**
+- ✅ No extra RAM needed (pymupdf is lightweight)
+- ✅ No model downloads
+- ✅ Works on any system
+- ❌ Slower for large documents (one vision API call per page)
+- ❌ Less accurate for complex layouts, tables, equations
+- ❌ More expensive (vision API calls)
+
+**Best for:** Books, articles, simple layouts where you need key pages rather than full-document OCR.
+
 ## Notes
 
 - `web_extract` is always first choice for URLs
 - pymupdf is the safe default — instant, no models, works everywhere
 - marker-pdf is for OCR, scanned docs, equations, complex layouts — install only when needed
 - Both helper scripts accept `--help` for full usage
-- marker-pdf downloads ~2.5GB of models to `~/.cache/huggingface/` on first use
-- For Word docs: `pip install python-docx` (better than OCR — parses actual structure)
+- On root systems: `pip install pymupdf marker-pdf --break-system-packages`
+- For Word docs: use `python-docx` (better than OCR — parses actual structure)
 - For PowerPoint: see the `powerpoint` skill (uses python-pptx)

@@ -8,9 +8,7 @@ Hermes Agent 自定义技能集合。本仓库存储 Hermes Agent 在使用过�
 
 | 技能 | 描述 | 创建日期 |
 |------|------|---------|
-| [bilibili-video-analysis](./bilibili-video-analysis/) | Download and analyze Bilibili videos — extract metadata, comments, download video via API, extract frames with ffmpeg, a... | 2026-05-02 |
-| [cron-script-output-handling](./cron-script-output-handling/) | Cron Job 脚本输出处理模式 - 控制是否让 LLM 处理脚本输出，还是直接发送原始输出 | 2026-05-02 |
-| [hermes-gateway-cron-debug](./hermes-gateway-cron-debug/) | Hermes Gateway 进程卡死导致定时任务失效的排查与修复 | 2026-04-29 |
+| [bilibili-video-analysis](./bilibili-video-analysis/) | Download and analyze Bilibili videos — extract metadata, comments, download video via API, extract frames with ffmpeg, a... | 2026-05-10 |
 
 ## 📦 外部安装的 Skills
 
@@ -31,4 +29,4 @@ Hermes Agent 自带的预装 skills 位于 [hermes_raw_skill/](./hermes_raw_skil
 详见 [hermes_raw_skill/README.md](./hermes_raw_skill/README.md)。
 
 ---
-*自动同步自 Hermes Agent skills 目录，最后更新: 2026-05-06 15:34*
+*自动同步自 Hermes Agent skills 目录，最后更新: 2026-05-10 22:00*

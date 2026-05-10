@@ -165,6 +165,7 @@ Total wall-clock time for 4 videos (~5300 frames): ~60-90 minutes with 3 concurr
 
 ## Pitfalls
 
+- **Multi-game compilations:** Some B站 gameplay videos contain multiple replays stitched together (different heroes, different matches). Vision analysis will see different game states across frames — this is normal. Flag this to the user and note which frames correspond to which match/hero.
 - **B站 412 error**: Direct website access and yt-dlp both fail. Always use the API approach.
 - **Danmaku (弹幕)**: The `dm/list.so` endpoint returns binary protobuf, not XML. Skip it or use a protobuf parser.
 - **Video URL expiry**: Stream URLs have tokens that expire. Download immediately after fetching.

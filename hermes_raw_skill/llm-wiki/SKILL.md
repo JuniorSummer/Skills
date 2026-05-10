@@ -495,6 +495,12 @@ vault in Obsidian on your laptop/phone — changes appear within seconds.
   The agent should check log size during lint.
 - **Handle contradictions explicitly** — don't silently overwrite. Note both claims with dates,
   mark in frontmatter, flag for user review.
+- **Multi-domain wikis** — when the user asks to "create a wiki" on a new topic but `~/wiki`
+  already has content from other domains, DO NOT overwrite SCHEMA.md or index.md. Instead:
+  (1) check existing content first with `ls`/`search_files`, (2) if other domains exist,
+  either add the new domain as a section within the existing schema/index, or ask the user
+  whether to create a separate wiki path (e.g. `~/wiki-memory/`). Overwriting a working
+  schema destroys navigation for all existing pages.
 
 ## Related Tools
 

@@ -366,6 +366,72 @@ echo 'alias claude="claude --permission-mode bypassPermissions"' >> ~/.bashrc
 
 Use the `#` prefix in interactive mode to quickly add to memory: `# Always use 2-space indentation`.
 
+## Plan Mode Workflow (Requirements Analysis)
+
+Use `--permission-mode plan` when you need Claude Code to **analyze requirements and design a solution** before writing code. This is ideal for new projects or major features.
+
+### Starting Plan Mode
+
+```bash
+# Via tmux (interactive — required for plan mode's interview questions)
+tmux new-session -d -s plan -x 140 -y 40
+tmux send-keys -t plan 'cd /path/to/project && claude --permission-mode plan' Enter
+sleep 5 && tmux send-keys -t plan Enter  # Handle trust dialog
+```
+
+### Plan Mode Interview
+
+Plan mode presents a **multi-step interview** before generating a plan. The interview uses a checklist UI:
+
+```
+←  ☐ Backend  ☐ Frontend  ☐ Database  ☐ Data Source  ✔ Submit  →
+```
+
+- Each step asks a question (e.g., "后端技术栈偏好？")
+- Default options are numbered (select with Enter)
+- Custom answers via "Type something" option
+- "Skip interview and plan immediately" bypasses all questions
+
+**Handling the interview via tmux:**
+```bash
+# Answer each question with Enter (selects default)
+tmux send-keys -t plan Enter  # Select default for each question
+# Repeat for each interview step
+```
+
+### Plan Generation & Approval
+
+After the interview, Claude Code:
+1. Searches the web for relevant information
+2. Generates a detailed technical plan
+3. Saves to `~/.claude/plans/<name>.md`
+4. Presents approval options:
+   - `1. Yes, and bypass permissions` — auto-approve all edits
+   - `2. Yes, manually approve edits` — require approval per edit
+   - `3. Tell Claude what to change` — request modifications
+
+### Simplifying Requirements Mid-Session
+
+When the user wants to pivot from complex to simple requirements:
+
+1. **Exit current session**: `tmux send-keys -t session '/exit' Enter`
+2. **Clean up**: `rm -rf project/* && rm -rf ~/.claude/plans/*`
+3. **Write new simplified requirements** to `requirements.md`
+4. **Restart**: New tmux session + `claude --permission-mode plan`
+5. **Reference simplified requirements** in the prompt
+
+This is faster than trying to modify the existing plan.
+
+### Plan Mode vs Print Mode
+
+| Aspect | Plan Mode | Print Mode (`-p`) |
+|--------|-----------|-------------------|
+| Interactive interview | ✅ Yes | ❌ No |
+| Web search during planning | ✅ Yes | ❌ No |
+| Plan file generation | ✅ `~/.claude/plans/` | ❌ No |
+| Auto-implementation after approval | ✅ Yes | ❌ No |
+| Best for | New projects, architecture | One-shot tasks, fixes |
+
 ## Interactive Session: Slash Commands
 
 ### Session & Context
@@ -472,6 +538,85 @@ When asked to create or modify database migrations:
 
 ### Pro Tip: "ultrathink"
 Use the keyword "ultrathink" in your prompt for maximum reasoning effort on a specific turn. This triggers the deepest thinking mode regardless of the current `/effort` setting.
+
+## Plan Mode (`--permission-mode plan`)
+
+Plan mode enters an **interactive interview** before generating a technical plan. It asks clarifying questions about tech stack choices, then generates a comprehensive plan before writing any code.
+
+### How Plan Mode Works
+
+1. Claude reads your prompt/project files
+2. Presents an **interview UI** with questions (backend, frontend, database, data source, etc.)
+3. You answer each question (arrow keys + Enter)
+4. Claude generates a detailed technical plan
+5. Plan is saved to `~/.claude/plans/<name>.md`
+6. Claude asks "Ready to code?" with options: execute, manual approve, or give feedback
+
+### Critical: Plan Mode Requires Interactive tmux
+
+**Plan mode does NOT work with print mode (`-p`).** The interview UI is a TUI component that requires an interactive terminal.
+
+```bash
+# ❌ WRONG - will timeout or fail
+claude -p "design a system" --permission-mode plan
+
+# ✅ CORRECT - use tmux interactive mode
+tmux send-keys -t session 'claude --permission-mode plan' Enter
+# Handle trust dialog
+sleep 5 && tmux send-keys -t session Enter
+# Send your prompt
+sleep 3 && tmux send-keys -t session 'Design a system for X' Enter
+# Monitor progress
+sleep 60 && tmux capture-pane -t session -p -S -100
+```
+
+### Plan Mode Interview Questions
+
+The interview typically asks about:
+- **Backend** tech stack (Python/Java/Node.js)
+- **Frontend** tech stack (React/Vue/Next.js)
+- **Database** preference (PostgreSQL/MySQL/MongoDB)
+- **Data sources** (existing API, need recommendations, mock data first)
+
+Navigate with arrow keys, select with Enter. The interview can be skipped with "Skip interview and plan immediately" option.
+
+### Trust Dialog Handling
+
+First time entering a directory triggers a trust dialog. In plan mode interactive session:
+```bash
+# After launching claude, wait and press Enter for "Yes, I trust this folder"
+sleep 5 && tmux send-keys -t session Enter
+```
+
+### Scope Control for Demos/Prototypes
+
+Claude Code tends to **over-engineer** by default (multi-tenant, Docker, Nginx, CI/CD). For demos or prototypes, explicitly constrain scope in the prompt:
+
+```
+This is a DEMO version. DO NOT include:
+- Multi-tenant isolation
+- Docker deployment
+- Nginx/reverse proxy
+- Complex authentication
+- CI/CD pipelines
+
+Only implement: [list core features]
+```
+
+### Monitoring Plan Generation
+
+Plan generation can take 2-5 minutes. Watch for:
+- `✢ Cooking…` — actively generating
+- `Plan(...)` with tool uses — reading files, web searching
+- `Ready to code?` — plan complete, asking for approval
+
+```bash
+# Check progress
+tmux capture-pane -t session -p -S -50
+
+# Look for "Ready to code?" prompt
+# Then send Enter to approve and start coding
+```
 
 ## PR Review Pattern
 
