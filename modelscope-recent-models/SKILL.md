@@ -7,87 +7,86 @@ trigger: 获取ModelScope新模型|modelscope最近模型|ModelScope本周开源
 # ModelScope 最近模型获取指南
 
 ## 关键发现
-1. **ModelScope API endpoint都不工作** - 直接HTTP请求全部返回404
-2. **必须使用Python SDK** - `pip install modelscope`
-3. **使用LastUpdatedTime而非created_at** - `created_at`字段不反映实际最近更新
+1. **OpenAPI 可用** — `/openapi/v1/models` 和 `/openapi/v1/datasets` 支持 GET 请求
+2. **snap Chromium 不可用** — AppArmor 限制导致 ProcessSingleton socket 创建失败，Playwright 浏览器抓取方案不可行
+3. **Python SDK 的 `list_models` 只能按 owner/org 查询**，不支持全局排序
+4. **Studios API 不存在** — `/openapi/v1/studios` 返回 404
+5. **首页是纯 SPA** — HTML 中无数据，必须用 API
 
-## 正确的 API 用法
+## 推荐方案: OpenAPI 直接调用（无需 Playwright/浏览器）
 
-```python
-from modelscope.hub.api import HubApi
-
-api = HubApi()
-
-# 获取模型列表 - 注意参数签名
-result = api.list_models(
-    owner_or_group='modelscope',  # 必需参数
-    page_number=1,
-    page_size=100
-)
-
-# 返回格式是 dict，不是 list
-# {'Models': [...], 'TotalCount': N}
-models = result.get('Models', [])
-
-# 排序取 TOP 10
-models.sort(key=lambda x: x.get('Downloads', 0), reverse=True)
-for m in models[:10]:
-    print(f"{m.get('Name')}: {m.get('Downloads')} downloads")
+### 模型 API
+```
+GET https://www.modelscope.cn/openapi/v1/models
+参数: page_number, page_size, sort
+sort 可选值: downloads | likes | last_modified
 ```
 
-## 字段映射参考
-- 模型名称: `m.get('Name')`
-- 下载量: `m.get('Downloads')`
-- Star数: `m.get('Stars')`
-- 机构: `m.get('Organization', {}).get('FullName', '')`
-
-## 热门数据抓取 (This Week's Trending)
-使用 Playwright 从首页抓取:
-
-```python
-from playwright.async_api import async_playwright
-
-async with async_playwright() as p:
-    browser = await p.chromium.launch(
-        executable_path='/snap/bin/chromium',
-        headless=True,
-        args=['--no-sandbox']
-    )
-    page = await browser.new_page()
-    await page.goto('https://www.modelscope.cn/home', 
-                   wait_until='domcontentloaded', timeout=30000)
-    await page.wait_for_timeout(10000)
-    lines = await page.evaluate('''() => {
-        return document.body.innerText.split('\\n');
-    }''')
+### 数据集 API
 ```
+GET https://www.modelscope.cn/openapi/v1/datasets
+参数: page_number, page_size, sort
+sort 可选值: default | downloads | likes | last_modified
+```
+
+### Python 示例
+```python
+import requests
+
+BASE = 'https://www.modelscope.cn'
+
+# 热门模型 TOP 10
+r = requests.get(f'{BASE}/openapi/v1/models', params={
+    'page_number': 1, 'page_size': 10, 'sort': 'downloads'
+})
+models = r.json()['data']['models']
+
+# 最近更新模型
+r = requests.get(f'{BASE}/openapi/v1/models', params={
+    'page_number': 1, 'page_size': 10, 'sort': 'last_modified'
+})
+
+# 热门数据集
+r = requests.get(f'{BASE}/openapi/v1/datasets', params={
+    'page_number': 1, 'page_size': 5, 'sort': 'downloads'
+})
+```
+
+### 返回字段（models 和 datasets 通用）
+- `id`: 完整路径如 `"iic/SenseVoiceSmall"`
+- `display_name`: 显示名称
+- `description`: 描述
+- `downloads`: 下载量（整数）
+- `likes`: 点赞数
+- `last_modified`: ISO 时间如 `"2026-05-15T01:09:19Z"`
+- `created_at`: 创建时间
+- `license`: 许可证
+- `tasks`: 任务标签列表
+
+## 旧方案（已废弃）: Python SDK + Playwright
+~~使用 `modelscope.hub.api.HubApi.list_models(owner_or_group='modelscope')` 只能查单个 org。~~
+~~Playwright 抓取首页因 snap Chromium AppArmor 限制不可用（ProcessSingleton socket 创建失败）。~~
 
 ## 环境注意
 - 必须使用 hermes venv: `/root/.hermes/hermes-agent/venv/bin/python`
-- 系统 Python 被锁定，无法安装额外包
-- 脚本开头需要切换 Python 解释器
+- snap Chromium 因 AppArmor 限制无法启动（ProcessSingleton socket 目录创建失败）
+- 如果需要浏览器渲染，需安装 Playwright 自带的 Chromium（`playwright install chromium`，~167MB）
 
 ## 输出格式
 
 ```
-🤖 ModelScope 本周新开源模型 TOP 10
+🤖 ModelScope 本周热门模型 TOP 10
 
-1️⃣ 模型名称 | 机构 | ⭐下载数
+1️⃣ 模型名称 | ⭐下载数 | 🔗 org/model-name
    简介...
-   适合场景: xxx
 
----
-数据来源: ModelScope | 采集时间: YYYY-MM-DD
+--- 
+数据来源: ModelScope OpenAPI | 采集时间: YYYY-MM-DD
 ```
 
 ## 注意事项
-- 无需认证即可获取公开模型
-- `LastUpdatedTime` 格式: `2026-04-29T10:30:00Z`
-- 下载量数值大，需格式化（229万+）
-- 本周通常有30+个模型更新
-
-## 验证
-```bash
-pip install modelscope
-python -c "from modelscope.hub.api import HubApi; print('OK')"
-```
+- 无需认证即可获取公开模型和数据集
+- `last_modified` 格式: ISO 8601 如 `2026-05-15T01:09:19Z`
+- 下载量数值大，需格式化（2.5亿、5862.3万等）
+- Studios/workflows API 不存在，无法获取
+- sort 仅支持: `downloads`、`likes`、`last_modified`，无"本周"维度排序

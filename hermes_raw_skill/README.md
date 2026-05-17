@@ -136,6 +136,7 @@ Hermes Agent 预装的技能集合。
 | [gameplay-video-wiki-analysis](./gameplay-video-wiki-analysis/) | Analyze gameplay videos (e.g. Honor of Kings, League of Legends) by combining frame-by-frame visual analysis with a doma... |
 | [google-workspace](./google-workspace/) | Gmail, Calendar, Drive, Contacts, Sheets, and Docs integration for Hermes. Uses Hermes-managed OAuth2 setup, prefers the... |
 | [hermes-skills-github-sync](./hermes-skills-github-sync/) | Sync Hermes Agent skills to a GitHub repo with automatic categorization, README generation, and weekly cron job. Self-ge... |
+| [humanizer](./humanizer/) | | |
 | [imessage](./imessage/) | Send and receive iMessages/SMS via the imsg CLI on macOS. |
 | [linear](./linear/) | Manage Linear issues, projects, and teams via the GraphQL API. Create, update, search, and organize issues. Uses API key... |
 | [maps](./maps/) | > |
@@ -185,4 +186,4 @@ Hermes Agent 预装的技能集合。
 | [writing-plans](./writing-plans/) | Use when you have a spec or requirements for a multi-step task. Creates comprehensive implementation plans with bite-siz... |
 
 ---
-*内置 skills，最后更新: 2026-05-10 22:00*
+*内置 skills，最后更新: 2026-05-17 22:01*

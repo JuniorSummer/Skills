@@ -127,6 +127,36 @@ mkdir -p ~/.hermes/skills/productivity/playwright-scraper
 hermes skills list | grep playwright
 ```
 
+## Example: Installing humanizer (search → GitHub API → force install)
+
+When `hermes skills search` finds a skill but the identifier doesn't resolve:
+
+```bash
+# Step 1: Search finds it in hub
+hermes skills search humanizer
+# Shows: lobehub/human-writer-skill
+
+# Step 2: Try the shown identifier - may fail
+hermes skills install lobehub/human-writer-skill
+# Error: Could not fetch from any source
+
+# Step 3: Search GitHub API directly for the actual repo
+curl -s "https://api.github.com/search/repositories?q=humanizer+skill&per_page=5"
+# Found: blader/humanizer
+
+# Step 4: Add the correct tap and install
+hermes skills tap add blader/humanizer
+hermes skills install blader/humanizer
+
+# Step 5: If blocked by security scan (CAUTION verdict on community skills)
+hermes skills install blader/humanizer --force
+
+# Step 6: Verify
+hermes skills list | grep humanizer
+```
+
+**Key insight**: The skill identifier shown in search results (e.g., `lobehub/human-writer-skill`) may not match the actual GitHub repo name. Always search GitHub API directly to find the correct repo when installation fails.
+
 ## Key Insights
 
 - ClawHub mirrors are SPAs - no simple REST API for skill content

@@ -410,6 +410,19 @@ After the interview, Claude Code:
    - `2. Yes, manually approve edits` — require approval per edit
    - `3. Tell Claude what to change` — request modifications
 
+**Sending approval via tmux:**
+```bash
+# Option 1: Send Enter to select "Yes, and bypass permissions" (default)
+tmux send-keys -t session Enter
+
+# Option 2: If Enter alone doesn't trigger implementation, send explicit text
+tmux send-keys -t session '是的，开始实施' Enter
+# or in English:
+tmux send-keys -t session 'Yes, start implementing' Enter
+```
+
+**Note:** After the plan is shown, Claude sometimes waits for explicit text confirmation rather than just Enter. If `Enter` doesn't start implementation, send a text response like "是的，开始实施".
+
 ### Simplifying Requirements Mid-Session
 
 When the user wants to pivot from complex to simple requirements:

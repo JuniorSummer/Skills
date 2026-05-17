@@ -151,7 +151,9 @@ This skill works with Hermes cron jobs for automated monitoring. Three jobs have
 
 ### Feishu Delivery Format
 
-**重要**: 推送到飞书时，需要包含每个项目的详细描述（100字左右），格式如下：
+**重要**: 
+1. **所有项目介绍必须使用中文输出**，不要使用英文描述
+2. 推送到飞书时，需要包含每个项目的详细描述（100字左右），格式如下：
 
 ```markdown
 📊 GitHub Trending 每日热门 (2026-04-27)

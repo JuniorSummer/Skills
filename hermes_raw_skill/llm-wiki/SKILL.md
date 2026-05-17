@@ -502,6 +502,37 @@ vault in Obsidian on your laptop/phone — changes appear within seconds.
   whether to create a separate wiki path (e.g. `~/wiki-memory/`). Overwriting a working
   schema destroys navigation for all existing pages.
 
+## Codebase Analysis with Claude Code
+
+When asked to analyze a codebase and generate wiki pages, use Claude Code (`claude -p`) for deep analysis:
+
+```bash
+# Single project analysis
+IS_SANDBOX=1 claude -p "分析项目 X，生成 wiki 页面到 /path/wiki/entities/ 和 /path/wiki/concepts/
+要求: 中文、YAML frontmatter、[[wikilinks]] 互相链接、内容不少于 100 行" \
+  --allowedTools 'Read,Write,Bash' --max-turns 40 --model sonnet
+```
+
+**Batch splitting (CRITICAL for 3+ projects):**
+- 2 projects per batch max (backend + 1 frontend, or 2-3 frontends)
+- First batch: `--max-turns 40` (usually completes in 60-120s)
+- Second batch: `--max-turns 50` (may take 5-10 min for 4 projects)
+- Use `background=true` + `notify_on_complete` for batches > 2 projects
+
+**Prompt template for Claude Code wiki generation:**
+```
+你是一个代码架构分析专家。请全面分析以下项目，为每个项目生成详细的 LLM Wiki 页面。
+项目路径: [list paths]
+对每个项目，请深入分析: 目录结构、技术栈、核心模块、API 设计、认证机制、配置文件、部署方式
+请为每个项目生成 wiki 页面保存到 [wiki_path]/entities/，概念页面保存到 [wiki_path]/concepts/
+文件格式: 中文、YAML frontmatter (title/created/updated/type/tags/sources)、[[wikilinks]]、不少于 100 行
+```
+
+**After Claude Code finishes:**
+1. Verify all expected files exist with `search_files`
+2. Create/update `index.md` with all new pages
+3. Append to `log.md`
+
 ## Related Tools
 
 [llm-wiki-compiler](https://github.com/atomicmemory/llm-wiki-compiler) is a Node.js CLI that
