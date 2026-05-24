@@ -1,4 +1,5 @@
 ---
+source: self-generated
 name: cron-script-output-handling
 description: Cron Job 脚本输出处理模式 - 控制是否让 LLM 处理脚本输出，还是直接发送原始输出
 tags: [cron, script, wakeAgent, feishu, push]

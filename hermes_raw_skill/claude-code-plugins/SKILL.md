@@ -1,4 +1,5 @@
 ---
+source: builtin
 name: claude-code-plugins
 description: Install, manage, and troubleshoot Claude Code plugins from GitHub marketplaces. Covers marketplace setup, plugin installation, common errors, and workarounds.
 ---

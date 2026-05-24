@@ -1,4 +1,5 @@
 ---
+source: clawhub
 name: "伦敦金人民币价格查询"
 description: 查询伦敦金价格，并自动转换为人民币/克单位。适合需要以人民币计价、按克计算黄金价格的场景。
 metadata: { "openclaw": { "emoji": "💰", "requires": { "bins": ["python3"], "env": ["JISU_API_KEY"] }, "primaryEnv": null } }

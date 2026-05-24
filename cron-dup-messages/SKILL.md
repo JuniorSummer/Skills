@@ -1,4 +1,5 @@
 ---
+source: self-generated
 name: cron-dup-messages
 description: Debug and fix duplicate cron job message推送问题 - 当定时任务同时发送重复消息时，分析并修复配置冲突
 tags: [cron, debug, feishu, push]

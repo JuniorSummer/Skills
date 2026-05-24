@@ -1,4 +1,5 @@
 ---
+source: builtin
 name: obsidian
 description: Read, search, and create notes in the Obsidian vault.
 ---

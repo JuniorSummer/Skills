@@ -1,4 +1,5 @@
 ---
+source: self-generated
 name: hermes-gateway-cron-debug
 description: Hermes Gateway 进程卡死导致定时任务失效的排查与修复
 tags: [hermes, gateway, cron, process, deadlock, debugging]

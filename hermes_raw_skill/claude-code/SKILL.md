@@ -1,4 +1,5 @@
 ---
+source: builtin
 name: claude-code
 description: Delegate coding tasks to Claude Code (Anthropic's CLI agent). Use for building features, refactoring, PR reviews, and iterative coding. Requires the claude CLI installed.
 version: 2.2.0

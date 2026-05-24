@@ -1,4 +1,5 @@
 ---
+source: builtin
 name: linear
 description: Manage Linear issues, projects, and teams via the GraphQL API. Create, update, search, and organize issues. Uses API key auth (no OAuth needed). All operations via curl — no dependencies.
 version: 1.0.0

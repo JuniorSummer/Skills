@@ -1,4 +1,5 @@
 ---
+source: builtin
 name: songwriting-and-ai-music
 description: >
   Songwriting craft, AI music generation prompts (Suno focus), parody/adaptation

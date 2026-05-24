@@ -1,4 +1,5 @@
 ---
+source: builtin
 name: design-md
 description: Author, validate, diff, and export DESIGN.md files — Google's open-source format spec that gives coding agents a persistent, structured understanding of a design system (tokens + rationale in one file). Use when building a design system, porting style rules between projects, generating UI with consistent brand, or auditing accessibility/contrast.
 version: 1.0.0

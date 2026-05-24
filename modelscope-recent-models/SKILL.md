@@ -1,4 +1,5 @@
 ---
+source: self-generated
 name: modelscope-recent-models
 description: 获取ModelScope魔搭社区最近更新的模型列表，按下载量排序
 trigger: 获取ModelScope新模型|modelscope最近模型|ModelScope本周开源

@@ -1,4 +1,5 @@
 ---
+source: builtin
 name: apple-notes
 description: Manage Apple Notes via the memo CLI on macOS (create, view, search, edit).
 version: 1.0.0

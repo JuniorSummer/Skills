@@ -1,4 +1,5 @@
 ---
+source: builtin
 name: research-paper-writing
 title: Research Paper Writing Pipeline
 description: End-to-end pipeline for writing ML/AI research papers — from experiment design through analysis, drafting, revision, and submission. Covers NeurIPS, ICML, ICLR, ACL, AAAI, COLM. Integrates automated experiment monitoring, statistical analysis, iterative writing, and citation verification.

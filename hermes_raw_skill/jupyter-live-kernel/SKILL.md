@@ -1,4 +1,5 @@
 ---
+source: builtin
 name: jupyter-live-kernel
 description: >
   Use a live Jupyter kernel for stateful, iterative Python execution via hamelnb.

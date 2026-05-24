@@ -1,4 +1,5 @@
 ---
+source: clawhub
 name: playwright-scraper
 description: Use Playwright to scrape dynamic web pages with JavaScript rendering support. Ideal for scraping SPAs, infinite-scroll feeds, lazy-loaded content, and sites requiring authentication or interaction.
 version: 1.0.0

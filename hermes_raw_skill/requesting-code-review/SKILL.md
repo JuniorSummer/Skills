@@ -1,4 +1,5 @@
 ---
+source: builtin
 name: requesting-code-review
 description: >
   Pre-commit verification pipeline — static security scan, baseline-aware

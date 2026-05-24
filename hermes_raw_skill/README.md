@@ -8,7 +8,6 @@ Hermes Agent 预装的技能集合。
 - [🎨 创意内容生成](#creative)
 - [📊 数据科学](#data-science)
 - [⚙️ DevOps & 自动化](#devops)
-- [📧 邮件管理](#email)
 - [🎮 游戏](#gaming)
 - [🐙 GitHub 工作流](#github)
 - [🎬 媒体处理](#media)
@@ -17,8 +16,6 @@ Hermes Agent 预装的技能集合。
 - [💼 生产力工具](#productivity)
 - [🔴 红队测试](#red-teaming)
 - [📚 学术研究](#research)
-- [🏠 智能家居](#smart-home)
-- [📱 社交媒体](#social-media)
 - [💻 软件开发](#software-development)
 
 ---
@@ -39,14 +36,10 @@ Hermes Agent 预装的技能集合。
 | [architecture-diagram](./architecture-diagram/) | Generate dark-themed SVG diagrams of software systems and cloud infrastructure as standalone HTML files with inline SVG ... |
 | [ascii-art](./ascii-art/) | Generate ASCII art using pyfiglet (571 fonts), cowsay, boxes, toilet, image-to-ascii, remote APIs (asciified, ascii.co.u... |
 | [ascii-video](./ascii-video/) | Production pipeline for ASCII art video — any format. Converts video/audio/images/generative input into colored ASCII ch... |
-| [baoyu-comic](./baoyu-comic/) | Knowledge comic creator supporting multiple art styles and tones. Creates original educational comics with detailed pane... |
-| [baoyu-infographic](./baoyu-infographic/) | Generate professional infographics with 21 layout types and 21 visual styles. Analyzes content, recommends layout×style ... |
-| [creative-ideation](./creative-ideation/) | Generate project ideas through creative constraints. Use when the user says 'I want to build something', 'give me a proj... |
 | [design-md](./design-md/) | Author, validate, diff, and export DESIGN.md files — Google's open-source format spec that gives coding agents a persist... |
 | [excalidraw](./excalidraw/) | Create hand-drawn style diagrams using Excalidraw JSON format. Generate .excalidraw files for architecture diagrams, flo... |
 | [manim-video](./manim-video/) | Production pipeline for mathematical and technical animations using Manim Community Edition. Creates 3Blue1Brown-style e... |
 | [p5js](./p5js/) | Production pipeline for interactive and generative visual art using p5.js. Creates browser-based sketches, generative ar... |
-| [pixel-art](./pixel-art/) | Convert images into retro pixel art with hardware-accurate palettes (NES, Game Boy, PICO-8, C64, etc.), and animate them... |
 | [popular-web-designs](./popular-web-designs/) | > |
 | [songwriting-and-ai-music](./songwriting-and-ai-music/) | > |
 
@@ -62,14 +55,7 @@ Hermes Agent 预装的技能集合。
 |------|------|
 | [dogfood](./dogfood/) | Systematic exploratory QA testing of web applications — find bugs, capture evidence, and generate structured reports |
 | [native-mcp](./native-mcp/) | Built-in MCP (Model Context Protocol) client that connects to external MCP servers, discovers their tools, and registers... |
-| [time-restricted-cron](./time-restricted-cron/) | 创建时间限制的定时任务模式 - 当复杂cron表达式不可用时，使用Python包装脚本实现时间范围限制 |
 | [webhook-subscriptions](./webhook-subscriptions/) | Create and manage webhook subscriptions for event-driven agent activation, or for direct push notifications (zero LLM co... |
-
-## 📧 邮件管理 {#email}
-
-| 技能 | 描述 |
-|------|------|
-| [himalaya](./himalaya/) | CLI to manage emails via IMAP/SMTP. Use himalaya to list, read, write, reply, forward, search, and organize emails from ... |
 
 ## 🎮 游戏 {#gaming}
 
@@ -88,7 +74,6 @@ Hermes Agent 预装的技能集合。
 | [github-issues](./github-issues/) | Create, manage, triage, and close GitHub issues. Search existing issues, add labels, assign people, and link to PRs. Wor... |
 | [github-pr-workflow](./github-pr-workflow/) | Full pull request lifecycle — create branches, commit changes, open PRs, monitor CI status, auto-fix failures, and merge... |
 | [github-repo-management](./github-repo-management/) | Clone, create, fork, configure, and manage GitHub repositories. Manage remotes, secrets, releases, and workflows. Works ... |
-| [github-trending](./github-trending/) | Fetch and analyze GitHub Trending repositories - daily, weekly, and monthly trending projects with AI-powered analysis. |
 
 ## 🎬 媒体处理 {#media}
 
@@ -96,7 +81,6 @@ Hermes Agent 预装的技能集合。
 |------|------|
 | [gif-search](./gif-search/) | Search and download GIFs from Tenor using curl. No dependencies beyond curl and jq. Useful for finding reaction GIFs, cr... |
 | [heartmula](./heartmula/) | Set up and run HeartMuLa, the open-source music generation model family (Suno-like). Generates full songs from lyrics + ... |
-| [songsee](./songsee/) | Generate spectrograms and audio feature visualizations (mel, chroma, MFCC, tempogram, etc.) from audio files via CLI. Us... |
 | [spotify](./spotify/) | Control Spotify — play music, search the catalog, manage playlists and library, inspect devices and playback state. Load... |
 | [youtube-content](./youtube-content/) | > |
 
@@ -128,26 +112,15 @@ Hermes Agent 预装的技能集合。
 
 | 技能 | 描述 |
 |------|------|
-| [aihot](./aihot/) | AI HOT (aihot.virxact.com) 中文 AI 资讯查询 Skill。当用户想知道"今天 AI 圈有什么"、"AI 日报"、"AI HOT"、"AI 资讯"、"AI 热点"、"最近 AI"、"OpenAI/Anthropi... |
 | [apple-notes](./apple-notes/) | Manage Apple Notes via the memo CLI on macOS (create, view, search, edit). |
 | [apple-reminders](./apple-reminders/) | Manage Apple Reminders via remindctl CLI (list, add, complete, delete). |
 | [claude-code-plugins](./claude-code-plugins/) | Install, manage, and troubleshoot Claude Code plugins from GitHub marketplaces. Covers marketplace setup, plugin install... |
-| [cn-price-data-scraping](./cn-price-data-scraping/) | 爬取国内价格数据网站 - 国际油价(guojiyoujia.com)和台州造价网(tzzj.cn) |
-| [curl-chinese-web-search](./curl-chinese-web-search/) | Use curl to search Chinese content via search engines (Bing, DuckDuckGo). Handles URL encoding of Chinese characters, HT... |
 | [findmy](./findmy/) | Track Apple devices and AirTags via FindMy.app on macOS using AppleScript and screen capture. |
-| [gameplay-video-wiki-analysis](./gameplay-video-wiki-analysis/) | Analyze gameplay videos (e.g. Honor of Kings, League of Legends) by combining frame-by-frame visual analysis with a doma... |
 | [google-workspace](./google-workspace/) | Gmail, Calendar, Drive, Contacts, Sheets, and Docs integration for Hermes. Uses Hermes-managed OAuth2 setup, prefers the... |
-| [hermes-skills-github-sync](./hermes-skills-github-sync/) | Sync Hermes Agent skills to a GitHub repo with automatic categorization, README generation, and weekly cron job. Self-ge... |
-| [humanizer](./humanizer/) | | |
 | [imessage](./imessage/) | Send and receive iMessages/SMS via the imsg CLI on macOS. |
 | [linear](./linear/) | Manage Linear issues, projects, and teams via the GraphQL API. Create, update, search, and organize issues. Uses API key... |
-| [maps](./maps/) | > |
-| [nano-pdf](./nano-pdf/) | Edit PDFs with natural-language instructions using the nano-pdf CLI. Modify text, fix typos, update titles, and make con... |
-| [notion](./notion/) | Notion API for creating and managing pages, databases, and blocks via curl. Search, create, update, and query Notion wor... |
-| [ocr-and-documents](./ocr-and-documents/) | Extract text from PDFs and scanned documents. Use web_extract for remote URLs, pymupdf for local text-based PDFs, marker... |
 | [powerpoint](./powerpoint/) | Use this skill any time a .pptx file is involved in any way — as input, output, or both. This includes: creating slide d... |
 | [remotion](./remotion/) | Generate walkthrough videos from Stitch projects using Remotion with smooth transitions, zooming, and text overlays |
-| [weread-skills](./weread-skills/) | 微信读书助手 — 搜索书籍、管理书架、查看笔记划线、浏览书评、阅读统计、发现推荐好书 |
 
 ## 🔴 红队测试 {#red-teaming}
 
@@ -160,23 +133,8 @@ Hermes Agent 预装的技能集合。
 | 技能 | 描述 |
 |------|------|
 | [arxiv](./arxiv/) | Search and retrieve academic papers from arXiv using their free REST API. No API key needed. Search by keyword, author, ... |
-| [blogwatcher](./blogwatcher/) | Monitor blogs and RSS/Atom feeds for updates using the blogwatcher-cli tool. Add blogs, scan for new articles, track rea... |
-| [llm-wiki](./llm-wiki/) | Karpathy's LLM Wiki — build and maintain a persistent, interlinked markdown knowledge base. Ingest sources, query compil... |
 | [polymarket](./polymarket/) | Query Polymarket prediction market data — search markets, get prices, orderbooks, and price history. Read-only via publi... |
 | [research-paper-writing](./research-paper-writing/) | End-to-end pipeline for writing ML/AI research papers — from experiment design through analysis, drafting, revision, and... |
-| [video-to-wiki-pipeline](./video-to-wiki-pipeline/) | Batch-analyze multiple videos and generate an interlinked LLM Wiki. End-to-end pipeline: download → extract frames → par... |
-
-## 🏠 智能家居 {#smart-home}
-
-| 技能 | 描述 |
-|------|------|
-| [openhue](./openhue/) | Control Philips Hue lights, rooms, and scenes via the OpenHue CLI. Turn lights on/off, adjust brightness, color, color t... |
-
-## 📱 社交媒体 {#social-media}
-
-| 技能 | 描述 |
-|------|------|
-| [xurl](./xurl/) | Interact with X/Twitter via xurl, the official X API CLI. Use for posting, replying, quoting, searching, timelines, ment... |
 
 ## 💻 软件开发 {#software-development}
 
@@ -190,4 +148,4 @@ Hermes Agent 预装的技能集合。
 | [writing-plans](./writing-plans/) | Use when you have a spec or requirements for a multi-step task. Creates comprehensive implementation plans with bite-siz... |
 
 ---
-*内置 skills，最后更新: 2026-05-24 22:00*
+*内置 skills，最后更新: 2026-05-24 22:31*

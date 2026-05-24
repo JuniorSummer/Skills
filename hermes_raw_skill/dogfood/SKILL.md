@@ -1,4 +1,5 @@
 ---
+source: builtin
 name: dogfood
 description: Systematic exploratory QA testing of web applications — find bugs, capture evidence, and generate structured reports
 version: 1.0.0

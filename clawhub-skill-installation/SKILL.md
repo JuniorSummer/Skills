@@ -1,4 +1,5 @@
 ---
+source: self-generated
 name: clawhub-skill-installation
 description: Install skills from ClawHub mirrors when standard hermes methods fail. Covers API discovery, fallback strategies, and manual skill installation.
 version: 1.0.0

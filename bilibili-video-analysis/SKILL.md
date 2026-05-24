@@ -1,4 +1,5 @@
 ---
+source: self-generated
 name: bilibili-video-analysis
 description: Download and analyze Bilibili videos — extract metadata, comments, download video via API, extract frames with ffmpeg, and analyze with vision AI. Use when a user shares a Bilibili video URL and wants content analysis, game review, or visual breakdown.
 version: 1.0.0

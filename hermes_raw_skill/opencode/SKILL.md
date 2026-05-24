@@ -1,4 +1,5 @@
 ---
+source: builtin
 name: opencode
 description: Delegate coding tasks to OpenCode CLI agent for feature implementation, refactoring, PR review, and long-running autonomous sessions. Requires the opencode CLI installed and authenticated.
 version: 1.2.0

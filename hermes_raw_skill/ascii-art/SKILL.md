@@ -1,4 +1,5 @@
 ---
+source: builtin
 name: ascii-art
 description: Generate ASCII art using pyfiglet (571 fonts), cowsay, boxes, toilet, image-to-ascii, remote APIs (asciified, ascii.co.uk), and LLM fallback. No API keys required.
 version: 4.0.0

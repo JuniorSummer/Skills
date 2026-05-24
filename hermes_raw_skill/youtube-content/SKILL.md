@@ -1,4 +1,5 @@
 ---
+source: builtin
 name: youtube-content
 description: >
   Fetch YouTube video transcripts and transform them into structured content

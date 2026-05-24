@@ -1,4 +1,5 @@
 ---
+source: self-generated
 name: llm-technical-comparison
 description: Comparative analysis workflow for LLM technical reports - extract parameters, benchmarks, pricing, and unique features from multiple models
 tags: [llm, comparison, technical-analysis, benchmark, pricing]
