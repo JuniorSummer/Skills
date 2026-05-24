@@ -245,6 +245,35 @@ vision_analyze(image_url="/tmp/page_0001.jpg", question="识别这张图片中�
 
 **Best for:** Books, articles, simple layouts where you need key pages rather than full-document OCR.
 
+## DOCX Extraction (no dependencies fallback)
+
+When `python-docx` is unavailable (externally-managed Python environments, no venv), parse DOCX directly using zipfile + XML:
+
+```python
+import zipfile
+import xml.etree.ElementTree as ET
+
+def get_docx_text(docx_path):
+    """Extract text from .docx without python-docx dependency."""
+    with zipfile.ZipFile(docx_path, 'r') as z:
+        xml_content = z.read('word/document.xml')
+    
+    tree = ET.fromstring(xml_content)
+    ns = {'w': 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'}
+    
+    paragraphs = []
+    for p in tree.iter('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}p'):
+        texts = []
+        for t in p.iter('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}t'):
+            if t.text:
+                texts.append(t.text)
+        if texts:
+            paragraphs.append(''.join(texts))
+    return paragraphs
+```
+
+**DOCX is a ZIP file** containing `word/document.xml` with all text content. This approach works on any Python installation with no pip installs needed.
+
 ## Notes
 
 - `web_extract` is always first choice for URLs
@@ -252,5 +281,5 @@ vision_analyze(image_url="/tmp/page_0001.jpg", question="识别这张图片中�
 - marker-pdf is for OCR, scanned docs, equations, complex layouts — install only when needed
 - Both helper scripts accept `--help` for full usage
 - On root systems: `pip install pymupdf marker-pdf --break-system-packages`
-- For Word docs: use `python-docx` (better than OCR — parses actual structure)
+- For Word docs: use `python-docx` first, fall back to zipfile+XML if unavailable
 - For PowerPoint: see the `powerpoint` skill (uses python-pptx)

@@ -132,6 +132,8 @@ Hermes Agent 预装的技能集合。
 | [apple-notes](./apple-notes/) | Manage Apple Notes via the memo CLI on macOS (create, view, search, edit). |
 | [apple-reminders](./apple-reminders/) | Manage Apple Reminders via remindctl CLI (list, add, complete, delete). |
 | [claude-code-plugins](./claude-code-plugins/) | Install, manage, and troubleshoot Claude Code plugins from GitHub marketplaces. Covers marketplace setup, plugin install... |
+| [cn-price-data-scraping](./cn-price-data-scraping/) | 爬取国内价格数据网站 - 国际油价(guojiyoujia.com)和台州造价网(tzzj.cn) |
+| [curl-chinese-web-search](./curl-chinese-web-search/) | Use curl to search Chinese content via search engines (Bing, DuckDuckGo). Handles URL encoding of Chinese characters, HT... |
 | [findmy](./findmy/) | Track Apple devices and AirTags via FindMy.app on macOS using AppleScript and screen capture. |
 | [gameplay-video-wiki-analysis](./gameplay-video-wiki-analysis/) | Analyze gameplay videos (e.g. Honor of Kings, League of Legends) by combining frame-by-frame visual analysis with a doma... |
 | [google-workspace](./google-workspace/) | Gmail, Calendar, Drive, Contacts, Sheets, and Docs integration for Hermes. Uses Hermes-managed OAuth2 setup, prefers the... |
@@ -144,6 +146,8 @@ Hermes Agent 预装的技能集合。
 | [notion](./notion/) | Notion API for creating and managing pages, databases, and blocks via curl. Search, create, update, and query Notion wor... |
 | [ocr-and-documents](./ocr-and-documents/) | Extract text from PDFs and scanned documents. Use web_extract for remote URLs, pymupdf for local text-based PDFs, marker... |
 | [powerpoint](./powerpoint/) | Use this skill any time a .pptx file is involved in any way — as input, output, or both. This includes: creating slide d... |
+| [remotion](./remotion/) | Generate walkthrough videos from Stitch projects using Remotion with smooth transitions, zooming, and text overlays |
+| [weread-skills](./weread-skills/) | 微信读书助手 — 搜索书籍、管理书架、查看笔记划线、浏览书评、阅读统计、发现推荐好书 |
 
 ## 🔴 红队测试 {#red-teaming}
 
@@ -186,4 +190,4 @@ Hermes Agent 预装的技能集合。
 | [writing-plans](./writing-plans/) | Use when you have a spec or requirements for a multi-step task. Creates comprehensive implementation plans with bite-siz... |
 
 ---
-*内置 skills，最后更新: 2026-05-17 22:01*
+*内置 skills，最后更新: 2026-05-24 22:00*
