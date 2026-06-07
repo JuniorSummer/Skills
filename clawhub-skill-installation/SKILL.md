@@ -158,9 +158,53 @@ hermes skills list | grep humanizer
 
 **Key insight**: The skill identifier shown in search results (e.g., `lobehub/human-writer-skill`) may not match the actual GitHub repo name. Always search GitHub API directly to find the correct repo when installation fails.
 
+## CMS Platform Skills (cms-find-skills)
+
+The `cms-find-skills` skill provides access to the CMS platform's skill registry:
+
+```bash
+# List all skills
+python3 ~/.hermes/skills/cms-find-skills/scripts/skill_registry/get_skills.py
+
+# Search (LIMITED — only matches exact SkillCode/name, fails on Chinese & multi-word)
+python3 ~/.hermes/skills/cms-find-skills/scripts/skill_registry/get_skills.py --search "关键词"
+
+# View detail
+python3 ~/.hermes/skills/cms-find-skills/scripts/skill_registry/get_skills.py --detail "skill-code"
+
+# Install
+python3 ~/.hermes/skills/cms-find-skills/scripts/skill_registry/install_skill.py --code "skill-code"
+```
+
+**CMS search limitation**: `--search` does substring match on SkillCode only, NOT on description or tags. Chinese keywords and multi-word queries often return empty. Use `--detail` on known codes instead.
+
+**CMS install bug**: `install_skill.py` expects SKILL.md at zip root. Some zips (e.g. find-skills.zip) extract SKILL.md directly without a subdirectory, causing "解压失败: 安装结果缺少 SKILL.md". Fix: manual install:
+
+```bash
+mkdir -p ~/.hermes/skills/<category>/<skill-name>
+unzip -o /tmp/skill.zip -d ~/.hermes/skills/<category>/<skill-name>/
+```
+
+## Skills.sh Ecosystem (broader search)
+
+For broader skill discovery beyond CMS, use `npx skills find [query]`:
+
+```bash
+npx skills find "coding prompt"       # Prompt template builders
+npx skills find "openspec"            # OpenSpec code specs
+npx skills find "frontend html"       # Frontend design skills
+npx skills find "react nextjs"        # React/Next.js skills
+```
+
+Install from skills.sh: `npx skills add owner/repo@skill-name -g -y`
+
+**This is the recommended search method** — CMS search is too limited for discovery.
+
 ## Key Insights
 
 - ClawHub mirrors are SPAs - no simple REST API for skill content
 - Network access to raw.githubusercontent.com may be blocked
 - Manual installation bypasses network issues entirely
 - YAML frontmatter is required for hermes to recognize the skill
+- CMS `get_skills.py --search` is nearly useless for discovery; use `npx skills find` instead
+- CMS `install_skill.py` fails when zip lacks subdirectory; use manual `unzip` as fallback
