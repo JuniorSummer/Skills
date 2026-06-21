@@ -8,8 +8,6 @@ Hermes Agent 自定义技能集合。本仓库存储 Hermes Agent 在使用过�
 
 | 技能 | 描述 | 创建日期 |
 |------|------|---------|
-| [chinese-award-doc-parsing](./chinese-award-doc-parsing/) | Parse Chinese corporate award/recognition notification documents (.doc/.docx) to extract person names, awards, and units. Common in state-owned enterprises and telecom companies. | 2026-06-09 |
-| [tencent-docs-spreadsheet](./tencent-docs-spreadsheet/) | Read and write Tencent Docs (腾讯文档) spreadsheets. Documents the correct approach (MCP server), pitfalls of scraping attempts, and available WPS alternatives. | 2026-06-07 |
 
 ## 📦 外部安装的 Skills
 
@@ -30,4 +28,4 @@ Hermes Agent 自带的预装 skills 位于 [hermes_raw_skill/](./hermes_raw_skil
 详见 [hermes_raw_skill/README.md](./hermes_raw_skill/README.md)。
 
 ---
-*自动同步自 Hermes Agent skills 目录，最后更新: 2026-06-14 22:01*
+*自动同步自 Hermes Agent skills 目录，最后更新: 2026-06-21 22:00*
