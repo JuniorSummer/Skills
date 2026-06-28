@@ -8,6 +8,8 @@ Hermes Agent 自定义技能集合。本仓库存储 Hermes Agent 在使用过�
 
 | 技能 | 描述 | 创建日期 |
 |------|------|---------|
+| [monthly-report-organizer](./monthly-report-organizer/) | 整理月报 - 将零散的月度工作记录整理成结构化月报格式 | 2026-06-26 |
+| [motor-industry-data-crawling](./motor-industry-data-crawling/) | 电机行业数据爬取方案 — 49个URL逐行测试+深度提取的最佳实践和结果记录 | 2026-06-24 |
 
 ## 📦 外部安装的 Skills
 
@@ -28,4 +30,4 @@ Hermes Agent 自带的预装 skills 位于 [hermes_raw_skill/](./hermes_raw_skil
 详见 [hermes_raw_skill/README.md](./hermes_raw_skill/README.md)。
 
 ---
-*自动同步自 Hermes Agent skills 目录，最后更新: 2026-06-21 22:00*
+*自动同步自 Hermes Agent skills 目录，最后更新: 2026-06-28 22:01*
