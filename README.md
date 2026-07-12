@@ -8,8 +8,7 @@ Hermes Agent 自定义技能集合。本仓库存储 Hermes Agent 在使用过�
 
 | 技能 | 描述 | 创建日期 |
 |------|------|---------|
-| [dify-workflow-best-practices](./dify-workflow-best-practices/) | Dify 工作流搭建最佳实践，源自多位高分选手的共性提炼。覆盖架构模式、节点选型、Prompt 工程、知识库配置、Code 节点技巧。Use when 搭建或优化 Dify/Coze 等平台的 AI 工作流、智能客服、RAG 应用。 | 2026-06-30 |
-| [weekly-report-organizer](./weekly-report-organizer/) | 整理周报 - 将零散的周进度笔记整理成结构化周报格式 | 2026-07-03 |
+| [cron-job-failure-diagnosis](./cron-job-failure-diagnosis/) | Diagnose cron job failures by checking job status, analyzing output logs, and identifying root cause (script vs LLM vs delivery). | 2026-07-06 |
 
 ## 📦 外部安装的 Skills
 
@@ -30,4 +29,4 @@ Hermes Agent 自带的预装 skills 位于 [hermes_raw_skill/](./hermes_raw_skil
 详见 [hermes_raw_skill/README.md](./hermes_raw_skill/README.md)。
 
 ---
-*自动同步自 Hermes Agent skills 目录，最后更新: 2026-07-05 22:01*
+*自动同步自 Hermes Agent skills 目录，最后更新: 2026-07-12 22:01*
