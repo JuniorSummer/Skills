@@ -96,27 +96,40 @@ Pitfall: docx 图像 OCR 时需放大 3x + 二值化阈值处理，否则中文�
 
 ### 3. 创建每日推送 Cron
 
+**推荐方案（2026-07-31 起使用）：Python 脚本确定性计算**
+
+脚本位置：`~/.hermes/scripts/memory_training_daily.py`
+
+Cron 配置：
 ```python
 cronjob(
     action="create",
     name="每日记忆训练",
     schedule="0 20 * * *",
     deliver="feishu:oc_xxxxx",
-    prompt=""你是记忆训练助手。执行艾宾浩斯记忆曲线训练任务。
-
-【第一步】读取 tracker，构建学习日列表
-【第二步】按学习日序号计算复习间隔（非自然日）
-【第三步】输出新学展示+需复习表格
-【第四步】汇报进度
-
-⛔ 绝不修改 tracker！不标记 learn_date，不添加 review_history。tracker 由用户交互测试时更新。"""
+    script="memory_training_daily.py",           # 脚本确定性计算
+    enabled_toolsets=["terminal"],
+    prompt="直接输出下面的数据，不要做任何分析、总结或解释。如果数据格式有问题才报告错误。"
 )
 ```
 
-**关键变更（2026-07-24）：**
-- Cron 不再自动写 tracker（不标记 learn_date，不加 review_history）
-- 复习间隔按"学习日序号"计算而非日历日
-- 跳过未学习天不算
+脚本功能（确定性，无 LLM 参与）：
+1. 读取 tracker.json（自动清除控制字符）
+2. 构建 learn_date → 学习日序号映射（非自然日）
+3. 按 review_intervals 计算每个已学项的到期 interval
+4. 检查 review_history 中已完成 interval，未完成的加入待复习
+5. 获取下 5 个未学项作为新学展示
+6. 输出格式化训练内容（列表格式，适配飞书渲染，不含 markdown 表格）
+
+**历史方案（已废弃，保留供参考）：**
+
+LLM prompt 脑算方式（容易出错，特别是 60+ 项 × 6 interval = 360 组合）：
+- 已于 2026-07-31 替换为脚本方案
+- 根因：LLM 脑算在数据量大时容易从 20 项暴增到 95 项（自然日 vs 学习日混淆）
+
+**关键变更历史：**
+- 2026-07-24: Cron 不再自动写 tracker（不标记 learn_date，不加 review_history）
+- 2026-07-31: 复习计算从 LLM 脑算改为 Python 脚本确定性计算
 
 ### 4. 交互式测试模式
 
@@ -184,6 +197,12 @@ cronjob(
 
 **算法：** 对每个已学 item，汇总已有复习记录覆盖的 interval，然后检查哪些 interval 的 学习日 ≤ 当前最大学习日 且未复习，加入复习列表。
 
+## Cron 输出格式要求
+
+- **新学展示按编码数字顺序排列**（升序，如 9→19→20→21→22），不按创建顺序或随机排列
+- **复习展示按学习日+编码顺序**，优先展示需要立即复习的项
+- 这与交互测试不同——测试时打乱顺序提高难度，cron 报告用数字顺序便于阅读
+
 ## Pitfalls
 
 1. **docx 图像 OCR 前必须预处理**：直接 OCR 几乎无输出，需放大 3x + 二值化（阈值 140）
@@ -192,3 +211,5 @@ cronjob(
 4. **tracker JSON 格式**：review_history 记录 `{date, type: "forward"|"reverse", correct: bool}`
 5. **read_file 返回带行号前缀**：使用 execute_code 的 read_file 时，内容每行带 `     1|` 前缀，需用 `line.split('|', 1)[1]` 剥离后再解析 JSON
 6. **cron 执行用脚本文件**：不要用 `cat file | python3 -c`（会触发安全拦截），改用 `write_file` + `terminal python3 script.py`
+7. **tracker JSON 含控制字符**：review_history 中可能有非法控制字符（如 `\x00`），导致 `json.loads(strict=False)` 也失败。`json_parse`（hermes_tools）同样无法处理。必须用二进制方式读取后逐字节过滤：`clean = bytearray(b for b in raw if b >= 32 or b in (10, 13, 9))`，再 `json.loads(clean.decode('utf-8'))`。最佳实践：用 `write_file` 写独立 .py 脚本，在脚本内 `open(path, 'rb')` 读取并清洗。
+8. **复习计算验证方法**：验证 cron 输出是否正确时，按学习日计算应得出远少于自然日的结果（本例：20项 vs 95项，4.8倍差距）。验证脚本模式：提取所有 learn_date 去重排序 → 建日期到学习日序号的映射 → 对每个已学 item 检查各 interval 的目标学习日是否已存在且未复习。
