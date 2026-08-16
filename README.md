@@ -8,8 +8,11 @@ Hermes Agent 自定义技能集合。本仓库存储 Hermes Agent 在使用过�
 
 | 技能 | 描述 | 创建日期 |
 |------|------|---------|
-| [ebbinghaus-memory-trainer](./ebbinghaus-memory-trainer/) | 艾宾浩斯记忆曲线训练系统 — 创建定时任务每天推送记忆训练内容，支持新学和复习的双向测试。覆盖设置跟踪文件、配置每日推送cron、处理图像型docx内容提取。 | 2026-08-03 |
-| [zsxq-daily-report-cron](./zsxq-daily-report-cron/) | 创建知识星球每日日报定时任务的完整方案。使用 zsxq-cli 采集前一天的主题和评论，通过 Python 脚本预处理后注入 cron prompt，由 LLM 整理成日报并发送到飞书。当需要设置知识星球内容监控、日报、周报等定时推送任务时使用。 | 2026-08-09 |
+| [ai-industry-entry-playbook](./ai-industry-entry-playbook/) | AI 应用开发公司进入新行业/领域的建设思路手册。从一份场景征集表/需求清单/行业资料出发，七步走完：场景统计画像 → 四标准筛选 → 双框架看聚集 → 行业块分工 → 企业需求匹配 → 泛化产品化判断 → demo资源地图，快速形成该领域AI应用建设方案。适用于AI应用开发团队切入新行业（工业/制造/医疗/能源等）。 | 2026-08-14 |
+| [benchmark-leaderboard-monitor](./benchmark-leaderboard-monitor/) | | | 2026-08-16 |
+| [cron-script-output-handling](./cron-script-output-handling/) | Cron Job 脚本输出处理模式 - 控制是否让 LLM 处理脚本输出，还是直接发送原始输出 | 2026-08-13 |
+| [ebbinghaus-memory-trainer](./ebbinghaus-memory-trainer/) | 艾宾浩斯记忆曲线训练系统 — 创建定时任务每天推送记忆训练内容，支持新学和复习的双向测试。覆盖设置跟踪文件、配置每日推送cron、处理图像型docx内容提取。 | 2026-08-10 |
+| [weekly-report-organizer](./weekly-report-organizer/) | 整理周报 - 将零散的周进度笔记整理成结构化周报格式 | 2026-08-14 |
 
 ## 📦 外部安装的 Skills
 
@@ -30,4 +33,4 @@ Hermes Agent 自带的预装 skills 位于 [hermes_raw_skill/](./hermes_raw_skil
 详见 [hermes_raw_skill/README.md](./hermes_raw_skill/README.md)。
 
 ---
-*自动同步自 Hermes Agent skills 目录，最后更新: 2026-08-09 22:01*
+*自动同步自 Hermes Agent skills 目录，最后更新: 2026-08-16 22:00*

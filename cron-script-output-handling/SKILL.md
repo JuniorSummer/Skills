@@ -62,10 +62,57 @@ cronjob(
 )
 ```
 
-### 两种方案对比
+### 方案三：脚本直接发送（最可靠）
+
+脚本自己通过 lark_oapi 发送消息到飞书，然后只输出 `{"wakeAgent": false}`。完全不依赖 LLM 和 cron 的 delivery 机制。
+
+```python
+def load_env():
+    """Cron 脚本环境没有 .profile，需要手动加载环境变量。"""
+    try:
+        with open('/root/.profile', 'r') as f:
+            for line in f:
+                line = line.strip()
+                if line.startswith('export ') and '=' in line:
+                    var_part = line[7:]
+                    key, _, value = var_part.partition('=')
+                    os.environ.setdefault(key, value.strip().strip('"'))
+    except Exception:
+        pass
+
+def send_to_feishu(message):
+    import lark_oapi as lark
+    from lark_oapi.api.im.v1 import CreateMessageRequest, CreateMessageRequestBody
+    load_env()  # 关键：cron 上下文缺环境变量
+    app_id = os.environ.get('FEISHU_APP_ID')
+    app_secret = os.environ.get('FEISHU_APP_SECRET')
+    chat_id = os.environ.get('FEISHU_HOME_CHANNEL')
+    client = lark.Client.builder().app_id(app_id).app_secret(app_secret).build()
+    body = (CreateMessageRequestBody.builder()
+        .receive_id(chat_id).msg_type("text")
+        .content(json.dumps({"text": message}, ensure_ascii=False)).build())
+    req = (CreateMessageRequest.builder()
+        .receive_id_type("chat_id").request_body(body).build())
+    client.im.v1.message.create(req)
+
+if __name__ == "__main__":
+    load_env()
+    data = get_gold_price()
+    message = format_message(data)
+    send_to_feishu(message)
+    print('{"wakeAgent": false}')  # 脚本已自行发送，跳过 agent
+```
+
+**关键注意点**：
+- cron 脚本运行环境不加载 `/root/.profile`，必须手动 `load_env()`
+- 用 `/root/.hermes/hermes-agent/venv/bin/python` 调用子脚本（如 london_gold_cny.py），系统 `python3` 可能缺依赖
+- 脚本只输出 `{"wakeAgent": false}` 一行，不再输出消息内容（已自行发送）
+
+### 三种方案对比
 
 | 方案 | 优点 | 缺点 |
 |------|------|------|
+| 脚本直接发送 | 最可靠，完全不依赖 LLM/cron delivery | 需写飞书 API 代码，cron 上下文需手动加载 env |
 | `wakeAgent: false` | 完全跳过 LLM，零成本 | 无法格式化、无错误处理 |
 | Prompt 指令法 | LLM 可做格式化/错误处理 | 仍有 token 消耗，LLM 可能偶尔添加多余内容 |
 

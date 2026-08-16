@@ -116,6 +116,31 @@ echo 'export JISU_API_KEY="your_appkey_here"' >> ~/.local/bin/env
 - 本 skill 不存储任何汇率或价格历史数据
 - 未配置 JISU_API_KEY 时会返回错误提示
 
+## 已知数据质量问题与修复（2026-08-12 诊断）
+
+### ❌ minprice 字段失真（已移除）
+
+JisuAPI 的 `minprice` 对**伦敦金/伦敦银**恒等于 `price + 0.35`，并非日内最低价（可能是点差或买入报价）。铂金/钯金的 minprice 则正常。
+
+**修复**：`london_gold_cny.py` 已移除 minprice/最低价字段，不再输出。推送脚本 `gold_price_to_feishu.py` 同步移除。
+
+### ❌ 免费汇率 API 返回错误汇率（已加校验）
+
+`exchangerate-api.com` 和 `open.er-api.com` 同时返回 USD/CNY = 6.76（实际应 7.1~7.3），导致人民币/克价格偏低约 7%。
+
+**修复**：新增汇率校验 + 每周缓存机制（`get_usd_cny_rate()` 函数）：
+- API 返回值超出 [6.8, 7.5] → 拒绝，回退到缓存
+- 汇率写入 `.rate_cache.json`，7 天内不重复请求 API
+- 缓存过期才刷新，API 异常时用旧缓存兜底，无缓存时用默认 7.2
+- 同时用两个 API 源做冗余
+
+### 诊断方法（可复用）
+
+批量分析 cron 输出目录 `~/.hermes/cron/output/<job_id>/` 中的历史文件，提取每次推送的价格字段做对比：
+- 对比 `minprice` 与 `price` 的差值是否恒定 → 识别字段语义异常
+- 对比 `汇率` 字段是否在合理区间 → 识别 API 返回异常
+- 用 `execute_code` 批量提取正则匹配 + 汇总统计，效率远高于逐条人工查看
+
 ## 故障排查记录 (2026-04-21)
 
 | 接口 | 状态 | 说明 |

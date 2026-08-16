@@ -119,7 +119,9 @@ Hermes Agent 预装的技能集合。
 | [findmy](./findmy/) | Track Apple devices and AirTags via FindMy.app on macOS using AppleScript and screen capture. |
 | [google-workspace](./google-workspace/) | Gmail, Calendar, Drive, Contacts, Sheets, and Docs integration for Hermes. Uses Hermes-managed OAuth2 setup, prefers the Google Workspace CLI (`gws`) when available for broader API coverage, and falls back to the Python client libraries otherwise. |
 | [imessage](./imessage/) | Send and receive iMessages/SMS via the imsg CLI on macOS. |
+| [knowledge-base](./knowledge-base/) | (无描述) |
 | [linear](./linear/) | Manage Linear issues, projects, and teams via the GraphQL API. Create, update, search, and organize issues. Uses API key auth (no OAuth needed). All operations via curl — no dependencies. |
+| [notes](./notes/) | (无描述) |
 | [powerpoint](./powerpoint/) | Use this skill any time a .pptx file is involved in any way — as input, output, or both. This includes: creating slide decks, pitch decks, or presentations; reading, parsing, or extracting text from any .pptx file (even if the extracted content will be used elsewhere, like in an email or summary); editing, modifying, or updating existing presentations; combining or splitting slide files; working with templates, layouts, speaker notes, or comments. Trigger whenever the user mentions \"deck,\" \"slides,\" \"presentation,\" or references a .pptx filename, regardless of what they plan to do with the content afterward. If a .pptx file needs to be opened, created, or touched, use this skill. |
 | [remotion](./remotion/) | Generate walkthrough videos from Stitch projects using Remotion with smooth transitions, zooming, and text overlays |
 | [skills](./skills/) | (无描述) |
@@ -150,4 +152,4 @@ Hermes Agent 预装的技能集合。
 | [writing-plans](./writing-plans/) | Use when you have a spec or requirements for a multi-step task. Creates comprehensive implementation plans with bite-sized tasks, exact file paths, and complete code examples. |
 
 ---
-*内置 skills，最后更新: 2026-08-09 22:01*
+*内置 skills，最后更新: 2026-08-16 22:00*

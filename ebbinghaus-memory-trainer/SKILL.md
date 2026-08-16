@@ -231,3 +231,5 @@ LLM prompt 脑算方式（容易出错，特别是 60+ 项 × 6 interval = 360 �
 7. **tracker JSON 含控制字符**：review_history 中可能有非法控制字符（如 `\x00`），导致 `json.loads(strict=False)` 也失败。`json_parse`（hermes_tools）同样无法处理。必须用二进制方式读取后逐字节过滤：`clean = bytearray(b for b in raw if b >= 32 or b in (10, 13, 9))`，再 `json.loads(clean.decode('utf-8'))`。最佳实践：用 `write_file` 写独立 .py 脚本，在脚本内 `open(path, 'rb')` 读取并清洗。
 8. **复习计算验证方法**：验证 cron 输出是否正确时，按学习日计算应得出远少于自然日的结果（本例：20项 vs 95项，4.8倍差距）。验证脚本模式：提取所有 learn_date 去重排序 → 建日期到学习日序号的映射 → 对每个已学 item 检查各 interval 的目标学习日是否已存在且未复习。
 9. **飞书不支持 Markdown 表格**：飞书消息渲染只支持粗体、斜体、代码块、链接，**不支持** `| col | col |` 表格语法。脚本输出若含 markdown 表格，飞书会原样显示 `|` 和 `---` 等标记字符。必须改用列表格式：`**编码** 物品（间隔·学习日）— 记忆方法`，每项一行。已修复于 2026-08-02。
+10. **同项多间隔到期去重**：同一 item 的多个 interval 可能同时到期（如学习日13的item在第15天时，1天和2天间隔都已到期）。必须在脚本中按 item key 去重，只保留最小的到期 interval。不去重会导致推送中同一项重复出现（40项变45项等）。修复于 2026-08-09。
+11. **交互测试 review_history 须带 interval 字段**：测试通过后标记已复习时，必须同时写入所有已到期间隔（`interval` 字段），否则下次 cron 推送会重复列出这些间隔。格式B记录需包含所有已完成的 interval。
