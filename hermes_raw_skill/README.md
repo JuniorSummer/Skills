@@ -116,9 +116,11 @@ Hermes Agent 预装的技能集合。
 | [apple-reminders](./apple-reminders/) | Manage Apple Reminders via remindctl CLI (list, add, complete, delete). |
 | [claude-code-plugins](./claude-code-plugins/) | Install, manage, and troubleshoot Claude Code plugins from GitHub marketplaces. Covers marketplace setup, plugin installation, common errors, and workarounds. |
 | [cms-find-skills](./cms-find-skills/) | 用于"安装 Skill / 下载 Skill / 找一个能做 X 的 Skill / 把某个 Skill 装到本地 / 列出平台 Skill"。从 CMS 平台搜索已有 Skill 并按 downloadUrl 下载 ZIP 解压到本地 ~/.claude/skills。仅负责查找与安装，不负责创建或发布 |
+| [feynman-coach](./feynman-coach/) | | |
 | [findmy](./findmy/) | Track Apple devices and AirTags via FindMy.app on macOS using AppleScript and screen capture. |
 | [google-workspace](./google-workspace/) | Gmail, Calendar, Drive, Contacts, Sheets, and Docs integration for Hermes. Uses Hermes-managed OAuth2 setup, prefers the Google Workspace CLI (`gws`) when available for broader API coverage, and falls back to the Python client libraries otherwise. |
 | [imessage](./imessage/) | Send and receive iMessages/SMS via the imsg CLI on macOS. |
+| [kaze-12-prompts](./kaze-12-prompts/) | 12 个通用 AI 提示词模板库,覆盖 5 大场景(问清问题/学习/解决问题/决策/认识自己)。当用户需要理清困惑、学习新概念、拆解优秀案例、研究陌生领域、核查事实、解决复杂问题、做决策、挖掘天赋、规划人生时,自动推荐并生成对应 prompt 模板。触发信号:苏格拉底提问、双层解释、反向拆解、横纵分析、事实核查、专家会诊、第一性原理、跨领域借解、钢人论证、最小实验、天赋挖掘、人生设计,以及"帮我理清/讲讲/解释下/怎么选/纠结/选哪个/学一下/分析这个/靠谱吗/真的假的/我适合什么"等相近表达。命中意图时先推荐模板,用户确认后替换【】占位符输出完整可复制 prompt。 |
 | [knowledge-base](./knowledge-base/) | (无描述) |
 | [linear](./linear/) | Manage Linear issues, projects, and teams via the GraphQL API. Create, update, search, and organize issues. Uses API key auth (no OAuth needed). All operations via curl — no dependencies. |
 | [notes](./notes/) | (无描述) |
@@ -152,4 +154,4 @@ Hermes Agent 预装的技能集合。
 | [writing-plans](./writing-plans/) | Use when you have a spec or requirements for a multi-step task. Creates comprehensive implementation plans with bite-sized tasks, exact file paths, and complete code examples. |
 
 ---
-*内置 skills，最后更新: 2026-08-16 22:00*
+*内置 skills，最后更新: 2026-08-23 22:00*

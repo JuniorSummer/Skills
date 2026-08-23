@@ -30,6 +30,22 @@ source: self-generated
 - 框架：TanStack Router SSR
 - 解析方法见下方
 
+### 3. AIHOT 大模型排行榜（AIHOT 共识分）
+- URL: `https://aihot.virxact.com/leaderboard`
+- 框架：Next.js SSR（React Server Components，`$L2a` 组件）
+- 解析方法：`__next_f.push` 中找 `"entries":[`，用 `json.JSONDecoder().raw_decode()` 直接从该位置解码 JSON 数组（entries 后跟 `,"basePath":"/leaderboard"`）。每条含 rank/previousRank/rankChange/name/provider/score/confidence。
+- 更新时间：RSC children 拆开形式 `"更新于 ","8月17日 12:49"`，正则 `r'"更新于\s*","([^"]+)"'`
+- ⚠️ 无专用 API（`/api/public/leaderboard` 返回 HTML 而非 JSON），只能解析 SSR 页面
+- 变化检测：新上榜 / 分数变化(≥0.1) / 排名变化(rank 不同) / 下榜
+
+## 三榜单独立处理机制（2026-08-17 起）
+
+- 三个榜单（Terminal-Bench / DeepSWE / AIHOT）各自独立对比、独立输出
+- 有变化的榜单：输出变化详情 + Top 15 列表
+- 无变化的榜单：只输出「无变化」，**不带 Top 15**
+- 脚本输出四个标记行：`__TB_HAS_CHANGES__` / `__DSWE_HAS_CHANGES__` / `__AIHOT_HAS_CHANGES__` / `__HAS_CHANGES__`（全局）
+- cron prompt 指示 LLM 直接透传三个【】区块，忽略日志和标记行
+
 ## SSR 数据解析技术（关键）
 
 ### Next.js（datalearner.com 等）

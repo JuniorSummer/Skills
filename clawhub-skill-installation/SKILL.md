@@ -28,6 +28,37 @@ hermes skills search <keyword>
 hermes skills install <identifier>
 ```
 
+## ClawHub.ai Direct Download (Preferred — clawhub.ai)
+
+clawhub.ai (the main site, not mirrors) has a working download API discovered 2026-08. Much cleaner than HTML scraping:
+
+```bash
+# 1. Fetch the skill detail page (SPA but SSR-rendered, content embedded)
+curl -skL "https://clawhub.ai/<owner>/skills/<slug>" -o page.html
+
+# 2. Extract version from embedded JSON (pattern: version:"1.0.0")
+grep -aoE 'version:"[0-9.]+"' page.html | head -1
+
+# 3. Download the full skill zip — this is the key endpoint
+curl -skL "https://clawhub.ai/api/v1/download?slug=<slug>&ownerHandle=<owner>&version=<version>" -o skill.zip
+# Returns application/zip containing: SKILL.md, README.md, skill-card.md, _meta.json, scripts/, examples/
+
+# 4. Extract and install
+mkdir -p ~/.hermes/skills/<category>/<skill-name>
+unzip -o skill.zip -d ~/.hermes/skills/<category>/<skill-name>/
+
+# 5. Verify
+hermes skills list | grep <skill-name>
+```
+
+**Pitfalls & findings**:
+- raw.githubusercontent.com / GitHub API / codeload.github.com are often blocked, or the repo may NOT exist on GitHub at all — ClawHub hosts skill content on its own Convex backend. Don't waste time searching GitHub; use the download endpoint.
+- URL structure `clawhub.ai/<owner>/skills/<slug>` (e.g. lewisbase/skills/feyman-coach → ownerHandle=lewisbase, slug=feyman-coach). The download endpoint needs `ownerHandle` (no @ prefix) and `version`.
+- Version is discoverable in the page's embedded data (`version:"1.0.0"`) or `_meta.json` inside the zip.
+- Fallback if download fails: the page HTML embeds the full rendered SKILL.md in `<div id="skill-tabpanel-readme">` — extract that div and convert HTML→Markdown (headings, code blocks, lists). Other files (scripts/, examples/) are NOT embedded — only SKILL.md is.
+- The page also embeds ClawHub's security audit results (search page for `issueId`/`finding`/`remediation`) — review these before installing; e.g. feynman-coach had os.system() command-injection findings in scripts/daily_review.py.
+- Install command shown on the page (`openclaw skills install @owner/slug`) is for OpenClaw, not Hermes — manual install is the way.
+
 ## Troubleshooting Steps
 
 ### 1. Check if the skill exists in hub
@@ -202,7 +233,9 @@ Install from skills.sh: `npx skills add owner/repo@skill-name -g -y`
 
 ## Key Insights
 
-- ClawHub mirrors are SPAs - no simple REST API for skill content
+- **clawhub.ai HAS a download API**: `/api/v1/download?slug=<slug>&ownerHandle=<owner>&version=<version>` returns the full skill zip — try this FIRST for main-site skills
+- ClawHub mirror domains (cn.clawhub-mirror.com etc.) are SPAs with no simple REST API — manual install or mirror-specific fallbacks needed there
+- GitHub raw/codeload may be blocked, or the skill repo may not exist on GitHub — content lives on ClawHub's Convex backend
 - Network access to raw.githubusercontent.com may be blocked
 - Manual installation bypasses network issues entirely
 - YAML frontmatter is required for hermes to recognize the skill

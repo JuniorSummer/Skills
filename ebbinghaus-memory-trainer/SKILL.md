@@ -99,6 +99,26 @@ Pitfall: docx 图像 OCR 时需放大 3x + 二值化阈值处理，否则中文�
 
 ### 3. 创建每日推送 Cron
 
+**多记忆库模式（2026-08-20 起）：一个脚本，多个 tracker**
+
+同一套艾宾浩斯机制支持多个独立记忆库（如数字编码、马斯克第一性原理等），每个库独立 tracker + 独立 cron，互不干扰。
+
+- 通用脚本 `~/.hermes/scripts/memory_training_daily.py` 支持 `--tracker <path>` 参数（默认数字编码库）
+- 每个额外记忆库建一个薄 wrapper 脚本（如 `memory_training_musk_daily.py`），调用通用脚本并传 `--tracker`
+- wrapper 脚本模式：
+  ```python
+  import subprocess, sys
+  TRACKER = "/root/.hermes/data/ebbinghaus_memory_tracker_musk.json"
+  MAIN = "/root/.hermes/scripts/memory_training_daily.py"
+  result = subprocess.run([sys.executable, MAIN, "--tracker", TRACKER], capture_output=True, text=True)
+  sys.stdout.write(result.stdout)
+  if result.stderr: sys.stderr.write(result.stderr)
+  sys.exit(result.returncode)
+  ```
+- 新 tracker 文件结构同标准 tracker，可加 `"name"` 字段标识主题
+- 每个库各自创建 cron（schedule 可相同如 `0 12 * * *`，各自推送）
+- 用户偏好：不同主题内容（如马斯克学习、数字编码）分开推送，不要混在一个 tracker
+
 **推荐方案（2026-07-31 起使用）：Python 脚本确定性计算**
 
 脚本位置：`~/.hermes/scripts/memory_training_daily.py`
@@ -133,19 +153,27 @@ LLM prompt 脑算方式（容易出错，特别是 60+ 项 × 6 interval = 360 �
 **关键变更历史：**
 - 2026-07-24: Cron 不再自动写 tracker（不标记 learn_date，不加 review_history）
 - 2026-07-31: 复习计算从 LLM 脑算改为 Python 脚本确定性计算
+- 2026-08-19: 实际部署推送时间从 20:00 改为 12:00（cron 配置示例中的 `0 20 * * *` 相应调整）
 
 ### 4. 交互式测试模式
 
-当用户说"开始记忆测试"时：
+当用户说"开始记忆测试"/"开始复习"时：
 
-1. 读取 tracker，获取当前活跃的学习项（learned 但未 mastered）
-2. 双向测试，**打乱顺序**提高难度：
+1. **获取本次测试题源**：用户回复 cron 推送时，消息里往往只有截断的部分内容。从 cron 会话文件提取完整推送：
+   ```bash
+   ls -t ~/.hermes/sessions/ | grep <cron_job_id> | head -1   # 取最新会话
+   ```
+   读取该 JSON，找到 role=assistant 且 content 含"记忆训练"的消息，解析出**新学项 + 待复习项**完整列表。
+2. 读取 tracker，获取当前活跃的学习项（learned 但未 mastered）
+3. 双向测试，**打乱顺序**提高难度：
    - **正向**：给键值 → 用户回忆物品
-   - **反向**：给物品 → 用户回忆键值
-3. 对错误/遗忘标记，记录到 review_history（correct=false）
-4. **不确定标记**：用户用【】包裹答案表示不确定（如【零食】），虽正确但需标记 `"uncertain": true` 到对应 review_history 记录，下次 cron 推送时用 ⚠️ 标注优先复习
-5. 更新 correct_streak，6次连续正确标记 mastered
-6. 汇报本次测试结果，重点提示不确定和错误的项
+   - **反向**：给物品 → 用户回忆键值（约各一半）
+   - **易混镜像对相邻出题**：如 34狮子↔43雪山 这类镜像数字，测试时应放一起对比（用户明确偏好）。谐音相近对也要注意：53武术衫↔54武士（用户实际答错过，53谐音"武衫"、54谐音"武士"）
+   - 新学项+复习项**合并一次性出完**，不分两轮（用户明确偏好）
+4. 对错误/遗忘标记，记录到 review_history（correct=false）
+5. **不确定标记**：用户用【】包裹答案表示不确定（如【零食】），虽正确但需标记 `"uncertain": true` 到对应 review_history 记录，下次 cron 推送时用 ⚠️ 标注优先复习
+6. 更新 correct_streak，6次连续正确标记 mastered
+7. 汇报本次测试结果，重点提示不确定和错误的项
 
 ### 5. 进度查询
 
@@ -233,3 +261,7 @@ LLM prompt 脑算方式（容易出错，特别是 60+ 项 × 6 interval = 360 �
 9. **飞书不支持 Markdown 表格**：飞书消息渲染只支持粗体、斜体、代码块、链接，**不支持** `| col | col |` 表格语法。脚本输出若含 markdown 表格，飞书会原样显示 `|` 和 `---` 等标记字符。必须改用列表格式：`**编码** 物品（间隔·学习日）— 记忆方法`，每项一行。已修复于 2026-08-02。
 10. **同项多间隔到期去重**：同一 item 的多个 interval 可能同时到期（如学习日13的item在第15天时，1天和2天间隔都已到期）。必须在脚本中按 item key 去重，只保留最小的到期 interval。不去重会导致推送中同一项重复出现（40项变45项等）。修复于 2026-08-09。
 11. **交互测试 review_history 须带 interval 字段**：测试通过后标记已复习时，必须同时写入所有已到期间隔（`interval` 字段），否则下次 cron 推送会重复列出这些间隔。格式B记录需包含所有已完成的 interval。
+12. **错题记录不带 interval 字段（保持间隔未完成，下次推送加强复习）**：交互测试答错的项，写入 `{"date": ..., "type": "interactive_test", "direction": ..., "correct": false}` 记录，**不带 interval 字段**，这样该 interval 仍视为未复习，下次 cron 推送会继续列出该错题（符合用户"错题提前加强复习"偏好）。同时将 `correct_streak` 重置为 0。
+13. **实现陷阱：不要用 `interval=None` 同时充当"新学项跳过"和"错题不写间隔"的哨兵**。批量更新脚本中若写 `if interval is None: continue`，会把答错的复习项（interval 为 None）一起跳过，导致失败记录完全没写入、streak 不归零。正确做法：区分三类——新学项（learn_date 未设置 → 设置 learn_date + 写测试记录）、答对项（带 interval 的 reviewed 记录 + streak+1）、答错项（不带 interval 的 correct:false 记录 + streak 归零），三者都要写。更新后务必运行 `memory_training_daily.py` 验证错题是否出现在下次复习列表。
+14. **空 tracker（无任何 learn_date）会报错**：`calc_review` 中 `max(date_to_day.values())` 在无已学项时抛 ValueError。需改为 `max(date_to_day.values()) if date_to_day else 0`（2026-08-20 修复，马斯克 tracker 首次运行触发）。
+15. **弱谐音编码加双重通道 memory_hint**：如 48=丝瓜（谐音弱，用户反馈难记），加"8横躺像丝瓜+4像藤架"外形画面 + "48≈是吧"菜市场场景，双重通道更稳。用户主动求助难记编码时，给出画面+场景两种联想，写入 memory_hint 后 cron 自动展示。

@@ -8,11 +8,10 @@ Hermes Agent 自定义技能集合。本仓库存储 Hermes Agent 在使用过�
 
 | 技能 | 描述 | 创建日期 |
 |------|------|---------|
-| [ai-industry-entry-playbook](./ai-industry-entry-playbook/) | AI 应用开发公司进入新行业/领域的建设思路手册。从一份场景征集表/需求清单/行业资料出发，七步走完：场景统计画像 → 四标准筛选 → 双框架看聚集 → 行业块分工 → 企业需求匹配 → 泛化产品化判断 → demo资源地图，快速形成该领域AI应用建设方案。适用于AI应用开发团队切入新行业（工业/制造/医疗/能源等）。 | 2026-08-14 |
-| [benchmark-leaderboard-monitor](./benchmark-leaderboard-monitor/) | | | 2026-08-16 |
-| [cron-script-output-handling](./cron-script-output-handling/) | Cron Job 脚本输出处理模式 - 控制是否让 LLM 处理脚本输出，还是直接发送原始输出 | 2026-08-13 |
-| [ebbinghaus-memory-trainer](./ebbinghaus-memory-trainer/) | 艾宾浩斯记忆曲线训练系统 — 创建定时任务每天推送记忆训练内容，支持新学和复习的双向测试。覆盖设置跟踪文件、配置每日推送cron、处理图像型docx内容提取。 | 2026-08-10 |
-| [weekly-report-organizer](./weekly-report-organizer/) | 整理周报 - 将零散的周进度笔记整理成结构化周报格式 | 2026-08-14 |
+| [benchmark-leaderboard-monitor](./benchmark-leaderboard-monitor/) | | | 2026-08-17 |
+| [clawhub-skill-installation](./clawhub-skill-installation/) | Install skills from ClawHub mirrors when standard hermes methods fail. Covers API discovery, fallback strategies, and manual skill installation. | 2026-08-18 |
+| [ebbinghaus-memory-trainer](./ebbinghaus-memory-trainer/) | 艾宾浩斯记忆曲线训练系统 — 创建定时任务每天推送记忆训练内容，支持新学和复习的双向测试。覆盖设置跟踪文件、配置每日推送cron、处理图像型docx内容提取。 | 2026-08-20 |
+| [weekly-report-organizer](./weekly-report-organizer/) | 整理周报 - 将零散的周进度笔记整理成结构化周报格式 | 2026-08-22 |
 
 ## 📦 外部安装的 Skills
 
@@ -33,4 +32,4 @@ Hermes Agent 自带的预装 skills 位于 [hermes_raw_skill/](./hermes_raw_skil
 详见 [hermes_raw_skill/README.md](./hermes_raw_skill/README.md)。
 
 ---
-*自动同步自 Hermes Agent skills 目录，最后更新: 2026-08-16 22:00*
+*自动同步自 Hermes Agent skills 目录，最后更新: 2026-08-23 22:00*
