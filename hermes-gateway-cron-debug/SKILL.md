@@ -80,6 +80,21 @@ grep "scheduler" ~/.hermes/logs/agent.log | tail -10
   0 4 * * * pkill -f "hermes.*gateway" && nohup /root/.hermes/hermes-agent/venv/bin/python -m hermes_cli.main gateway run --replace > /dev/null 2>&1 &
   ```
 
+## 特殊失败：完成后 dispatch 报 systemd scope 错误（容器无用户 systemd）
+
+### 症状
+所有任务 last_status 失败，错误：`Restart-safe cron worker dispatch failed: cannot create restart-safe systemd scope for gateway child: systemd-run --user --scope is unavailable`。gateway 进程本身存活、消息收发生正常，只有 cron worker 派发失败。
+
+### 根因
+运行中的 gateway 进程内存里加载的是旧代码（启动了 systemd-based restart-safe dispatch），而磁盘上的新源码已不含该逻辑（`rg -rn -i 'systemd' cron/ gateway/` 为空即证实）。容器/环境无 user systemd 会话（`systemd-run --user` 报 "Failed to connect to bus: No medium found"，`XDG_RUNTIME_DIR` 空）→ 每 tick 派发自定义。
+
+### 判断"进程跑旧代码"的依据
+- 磁盘源码 grep 不到报错关键字，但 errors.log 却持续报该错 → 运行进程与磁盘源码不一致（记忆：CLI/网关失败先怀疑进程跑旧代码）。
+
+### 修复 = 重启 gateway（必须从外部 shell，不能在 gateway 内）
+⚠️ 安全守卫：从 gateway 子进程内任何终端执行 `kill` / `hermes gateway restart` / `systemctl restart hermes-gateway` 都会被拦截（"cannot restart, stop, or uninstall the gateway from inside the gateway process"）。本机是 system 级 systemd 服务。
+正确做法：**另开 shell / SSH** 执行 `systemctl restart hermes-gateway`（等价 `hermes gateway restart`）。重启后加载新代码，派发自动恢复。
+
 ## 相关日志位置
 - `/root/.hermes/logs/agent.log` - 主日志，包含调度信息
 - `/root/.hermes/logs/errors.log` - 错误日志

@@ -112,21 +112,48 @@ Hermes Agent 预装的技能集合。
 
 | 技能 | 描述 |
 |------|------|
+| [airtable](./airtable/) | Airtable REST API via curl. Records CRUD, filters, upserts. |
 | [apple-notes](./apple-notes/) | Manage Apple Notes via the memo CLI on macOS (create, view, search, edit). |
 | [apple-reminders](./apple-reminders/) | Manage Apple Reminders via remindctl CLI (list, add, complete, delete). |
+| [blocked-page-recovery](./blocked-page-recovery/) | Use when a fetch fails: 403/429, paywall, WAF, bot wall. |
+| [box](./box/) | Box manages cloud files, sharing, search, and metadata. |
 | [claude-code-plugins](./claude-code-plugins/) | Install, manage, and troubleshoot Claude Code plugins from GitHub marketplaces. Covers marketplace setup, plugin installation, common errors, and workarounds. |
+| [claude-design](./claude-design/) | Design one-off HTML artifacts (landing, deck, prototype). |
 | [cms-find-skills](./cms-find-skills/) | 用于"安装 Skill / 下载 Skill / 找一个能做 X 的 Skill / 把某个 Skill 装到本地 / 列出平台 Skill"。从 CMS 平台搜索已有 Skill 并按 downloadUrl 下载 ZIP 解压到本地 ~/.claude/skills。仅负责查找与安装，不负责创建或发布 |
+| [competitor-news-monitor](./competitor-news-monitor/) | Watch named companies for material news; cited digests. |
+| [computer-use](./computer-use/) | Drive the desktop background-first; escalate on signal. |
+| [document-to-action-items](./document-to-action-items/) | Extract cited obligations, deadlines, tasks from documents. |
+| [docx](./docx/) | Create, read, edit, template, and review Word .docx files. |
+| [email-inbox-triage](./email-inbox-triage/) | Triage an inbox: prioritize threads, draft replies safely. |
 | [feynman-coach](./feynman-coach/) | | |
 | [findmy](./findmy/) | Track Apple devices and AirTags via FindMy.app on macOS using AppleScript and screen capture. |
+| [github](./github/) | GitHub via gh CLI: PRs, issues, reviews, repos, auth. |
 | [google-workspace](./google-workspace/) | Gmail, Calendar, Drive, Contacts, Sheets, and Docs integration for Hermes. Uses Hermes-managed OAuth2 setup, prefers the Google Workspace CLI (`gws`) when available for broader API coverage, and falls back to the Python client libraries otherwise. |
+| [grounded-citations](./grounded-citations/) | Ground answers and documents in cited, verifiable sources. |
+| [hermes-agent-skill-authoring](./hermes-agent-skill-authoring/) | Author in-repo SKILL.md files: frontmatter and structure. |
+| [humanizer](./humanizer/) | Humanize text: strip AI-isms and add real voice. |
 | [imessage](./imessage/) | Send and receive iMessages/SMS via the imsg CLI on macOS. |
+| [inspecting-hermes-desktop-dom](./inspecting-hermes-desktop-dom/) | Read the live Hermes desktop DOM/CSS over CDP. |
 | [kaze-12-prompts](./kaze-12-prompts/) | 12 个通用 AI 提示词模板库,覆盖 5 大场景(问清问题/学习/解决问题/决策/认识自己)。当用户需要理清困惑、学习新概念、拆解优秀案例、研究陌生领域、核查事实、解决复杂问题、做决策、挖掘天赋、规划人生时,自动推荐并生成对应 prompt 模板。触发信号:苏格拉底提问、双层解释、反向拆解、横纵分析、事实核查、专家会诊、第一性原理、跨领域借解、钢人论证、最小实验、天赋挖掘、人生设计,以及"帮我理清/讲讲/解释下/怎么选/纠结/选哪个/学一下/分析这个/靠谱吗/真的假的/我适合什么"等相近表达。命中意图时先推荐模板,用户确认后替换【】占位符输出完整可复制 prompt。 |
 | [knowledge-base](./knowledge-base/) | (无描述) |
 | [linear](./linear/) | Manage Linear issues, projects, and teams via the GraphQL API. Create, update, search, and organize issues. Uses API key auth (no OAuth needed). All operations via curl — no dependencies. |
+| [meeting-action-items](./meeting-action-items/) | Turn meeting notes into cited decisions, owners, tickets. |
+| [node-inspect-debugger](./node-inspect-debugger/) | Debug Node.js via --inspect + Chrome DevTools Protocol CLI. |
 | [notes](./notes/) | (无描述) |
+| [pdf](./pdf/) | PDF files: create, read, merge, fill, OCR, edit text. |
 | [powerpoint](./powerpoint/) | Use this skill any time a .pptx file is involved in any way — as input, output, or both. This includes: creating slide decks, pitch decks, or presentations; reading, parsing, or extracting text from any .pptx file (even if the extracted content will be used elsewhere, like in an email or summary); editing, modifying, or updating existing presentations; combining or splitting slide files; working with templates, layouts, speaker notes, or comments. Trigger whenever the user mentions \"deck,\" \"slides,\" \"presentation,\" or references a .pptx filename, regardless of what they plan to do with the content afterward. If a .pptx file needs to be opened, created, or touched, use this skill. |
+| [product-price-monitor](./product-price-monitor/) | Watch product, flight, or listing prices; alert on target. |
+| [python-debugpy](./python-debugpy/) | Debug Python: pdb REPL + debugpy remote (DAP). |
+| [reddit-reading](./reddit-reading/) | Read Reddit: subreddits, search, threads, users. No browser. |
 | [remotion](./remotion/) | Generate walkthrough videos from Stitch projects using Remotion with smooth transitions, zooming, and text overlays |
+| [rss-feeds](./rss-feeds/) | Read RSS, Atom, JSON feeds; discover feeds behind a page. |
+| [sdlc-review](./sdlc-review/) | Review Kanban handoffs and route verified outcomes. |
+| [simplify-code](./simplify-code/) | Parallel 4-agent cleanup of recent code changes. |
 | [skills](./skills/) | (无描述) |
+| [spike](./spike/) | Throwaway experiments to validate an idea before build. |
+| [teams-meeting-pipeline](./teams-meeting-pipeline/) | Teams meeting summaries, job replay, Graph subscriptions. |
+| [weekly-review-planning](./weekly-review-planning/) | Weekly reset: commitments, stalled work, next-week plan. |
+| [xlsx](./xlsx/) | Create, read, edit Excel .xlsx workbooks and CSVs. |
 
 ## 🔴 红队测试 {#red-teaming}
 
@@ -154,4 +181,4 @@ Hermes Agent 预装的技能集合。
 | [writing-plans](./writing-plans/) | Use when you have a spec or requirements for a multi-step task. Creates comprehensive implementation plans with bite-sized tasks, exact file paths, and complete code examples. |
 
 ---
-*内置 skills，最后更新: 2026-09-06 22:01*
+*内置 skills，最后更新: 2026-09-09 13:55*
