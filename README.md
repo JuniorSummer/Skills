@@ -8,11 +8,6 @@ Hermes Agent 自定义技能集合。本仓库存储 Hermes Agent 在使用过�
 
 | 技能 | 描述 | 创建日期 |
 |------|------|---------|
-| [cron-job-management](./cron-job-management/) | 管理/创建/审计定时任务。model/provider 用 hermes cron edit CLI 设置。 | 2026-09-08 |
-| [hermes-gateway-crash-loop-diagnosis](./hermes-gateway-crash-loop-diagnosis/) | Gateway crash-loop: all channels drop, restarts climb. | 2026-09-07 |
-| [hermes-gateway-cron-debug](./hermes-gateway-cron-debug/) | Hermes Gateway 进程卡死导致定时任务失效的排查与修复 | 2026-09-09 |
-| [hermes-gateway-model-diagnosis](./hermes-gateway-model-diagnosis/) | 网关频道模型/API 报错排查，CLI正常但网关失败时优先怀疑网关进程跑旧代码。 | 2026-09-07 |
-| [weekly-report-organizer](./weekly-report-organizer/) | 整理周报/日报 - 将零散的周/日工作笔记整理成结构化周报格式（【重点事宜】【存在问题】纯文本结构） | 2026-09-05 |
 
 ## 📦 外部安装的 Skills
 
@@ -33,4 +28,4 @@ Hermes Agent 自带的预装 skills 位于 [hermes_raw_skill/](./hermes_raw_skil
 详见 [hermes_raw_skill/README.md](./hermes_raw_skill/README.md)。
 
 ---
-*自动同步自 Hermes Agent skills 目录，最后更新: 2026-09-09 13:55*
+*自动同步自 Hermes Agent skills 目录，最后更新: 2026-09-20 22:00*
