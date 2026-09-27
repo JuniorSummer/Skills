@@ -112,6 +112,7 @@ Hermes Agent 预装的技能集合。
 
 | 技能 | 描述 |
 |------|------|
+| [agent-config-export](./agent-config-export/) | Export AI agent config as a sanitized read-only package. |
 | [airtable](./airtable/) | Airtable REST API via curl. Records CRUD, filters, upserts. |
 | [apple-notes](./apple-notes/) | Manage Apple Notes via the memo CLI on macOS (create, view, search, edit). |
 | [apple-reminders](./apple-reminders/) | Manage Apple Reminders via remindctl CLI (list, add, complete, delete). |
@@ -181,4 +182,4 @@ Hermes Agent 预装的技能集合。
 | [writing-plans](./writing-plans/) | Use when you have a spec or requirements for a multi-step task. Creates comprehensive implementation plans with bite-sized tasks, exact file paths, and complete code examples. |
 
 ---
-*内置 skills，最后更新: 2026-09-20 22:00*
+*内置 skills，最后更新: 2026-09-27 22:00*
