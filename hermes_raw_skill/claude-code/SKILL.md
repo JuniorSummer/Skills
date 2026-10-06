@@ -1,10 +1,10 @@
 ---
-source: builtin
 name: claude-code
-description: Delegate coding tasks to Claude Code (Anthropic's CLI agent). Use for building features, refactoring, PR reviews, and iterative coding. Requires the claude CLI installed.
-version: 2.2.0
+description: "Delegate coding to Claude Code CLI (features, PRs)."
+version: 2.2.1
 author: Hermes Agent + Teknium
 license: MIT
+platforms: [linux, macos, windows]
 metadata:
   hermes:
     tags: [Coding-Agent, Claude, Anthropic, Code-Review, Refactoring, PTY, Automation]
@@ -89,32 +89,41 @@ Claude Code presents up to two confirmation dialogs on first launch. You MUST ha
 ```
 **Handling:** `tmux send-keys -t <session> Enter` — default selection is correct.
 
-### Dialog 2: Bypass Permissions Warning (only with --dangerously-skip-permissions)
+### Dialog 2: Individual Permission Prompts (normal flow)
+
+Each tool use that needs approval (file write, shell command, network) shows a prompt. Answer that one prompt — this is different from disabling prompts for the whole run:
 ```
-❯ 1. No, exit                    ← DEFAULT (WRONG choice!)
-  2. Yes, I accept
+# Read the prompt before answering it
+terminal(command="tmux capture-pane -t <session> -p -S -30")
+# Allow this one action (Enter = default "Yes"); Esc declines it
+terminal(command="tmux send-keys -t <session> Enter")
 ```
-**Handling:** Must navigate DOWN first, then Enter:
-```
-tmux send-keys -t <session> Down && sleep 0.3 && tmux send-keys -t <session> Enter
-```
+Never send a blind `Enter` on a timer to approve prompts you have not read — that is the bypass flag with extra steps.
+
+A narrower opt-in than the full bypass is `--permission-mode acceptEdits`: file edits in the working directory are accepted, shell and other tool calls still prompt. Use it only in a dedicated worktree after reviewing the task.
 
 ### Robust Dialog Handling Pattern
 ```
-# Launch with permissions bypass
-terminal(command="tmux send-keys -t claude-work 'claude --dangerously-skip-permissions \"your task\"' Enter")
+# Default launch — keep permission prompts enabled
+terminal(command="tmux send-keys -t claude-work 'claude \"your task\"' Enter")
 
 # Handle trust dialog (Enter for default "Yes")
 terminal(command="sleep 4 && tmux send-keys -t claude-work Enter")
-
-# Handle permissions dialog (Down then Enter for "Yes, I accept")
-terminal(command="sleep 3 && tmux send-keys -t claude-work Down && sleep 0.3 && tmux send-keys -t claude-work Enter")
 
 # Now wait for Claude to work
 terminal(command="sleep 15 && tmux capture-pane -t claude-work -p -S -60")
 ```
 
-**Note:** After the first trust acceptance for a directory, the trust dialog won't appear again. Only the permissions dialog recurs each time you use `--dangerously-skip-permissions`.
+**Note:** After the first trust acceptance for a directory, the trust dialog won't appear again.
+
+### Opt-in: --dangerously-skip-permissions (isolated environments only)
+
+This disables permission prompts for the whole run — grants filesystem, shell, and network access with no prompts. Acceptable only in a throwaway worktree or isolated container.
+```
+❯ 1. No, exit                    ← DEFAULT (safe choice)
+  2. Yes, I accept
+```
+To accept: `tmux send-keys -t <session> Down && sleep 0.3 && tmux send-keys -t <session> Enter`
 
 ## CLI Subcommands
 
@@ -209,10 +218,10 @@ Parse `structured_output` from the JSON result. Claude validates output against 
 ### Session Continuation
 ```
 # Start a task
-terminal(command="claude -p 'Start refactoring the database layer' --output-format json --max-turns 10 > /tmp/session.json", workdir="/project", timeout=180)
+terminal(command="claude -p 'Start refactoring the database layer' --output-format json --max-turns 10 > ~/.hermes/cache/scratch/session.json", workdir="/project", timeout=180)
 
 # Resume with session ID
-terminal(command="claude -p 'Continue and add connection pooling' --resume $(cat /tmp/session.json | python3 -c 'import json,sys; print(json.load(sys.stdin)[\"session_id\"])') --max-turns 5", workdir="/project", timeout=120)
+terminal(command="claude -p 'Continue and add connection pooling' --resume $(cat ~/.hermes/cache/scratch/session.json | python -c 'import json,sys; print(json.load(sys.stdin)[\"session_id\"])') --max-turns 5", workdir="/project", timeout=120)
 
 # Or resume the most recent session in the same directory
 terminal(command="claude -p 'What did you do last time?' --continue --max-turns 1", workdir="/project", timeout=30)
@@ -265,7 +274,7 @@ Automatically falls back to the specified model when the default is overloaded (
 | Flag | Effect |
 |------|--------|
 | `--model <alias>` | Model selection: `sonnet`, `opus`, `haiku`, or full name like `claude-sonnet-4-6` |
-| `--effort <level>` | Reasoning depth: `low`, `medium`, `high`, `max`, `auto` | Both |
+| `--effort <level>` | Reasoning depth: `low`, `medium`, `high`, `xhigh`, `max` |
 | `--max-turns <n>` | Limit agentic loops (print mode only; prevents runaway) |
 | `--max-budget-usd <n>` | Cap API spend in dollars (print mode only) |
 | `--fallback-model <model>` | Auto-fallback when default model is overloaded (print mode only) |
@@ -274,7 +283,7 @@ Automatically falls back to the specified model when the default is overloaded (
 ### Permission & Safety
 | Flag | Effect |
 |------|--------|
-| `--dangerously-skip-permissions` | Auto-approve ALL tool use (file writes, bash, network, etc.) |
+| `--dangerously-skip-permissions` | Opt-in only: disables ALL permission prompts (file writes, bash, network). Throwaway worktree / isolated container only — see "Opt-in" above |
 | `--allow-dangerously-skip-permissions` | Enable bypass as an *option* without enabling it by default |
 | `--permission-mode <mode>` | `default`, `acceptEdits`, `plan`, `auto`, `dontAsk`, `bypassPermissions` |
 | `--allowedTools <tools...>` | Whitelist specific tools (comma or space-separated) |
@@ -344,7 +353,6 @@ mcp__<server>__<tool>   # Specific MCP tool
 ### Permissions in Settings
 ```json
 {
-  "permissionMode": "bypassPermissions",
   "permissions": {
     "allow": ["Bash(npm run lint:*)", "WebSearch", "Read"],
     "ask": ["Write(*.ts)", "Bash(git push*)"],
@@ -353,98 +361,12 @@ mcp__<server>__<tool>   # Specific MCP tool
 }
 ```
 
-**Permission modes:** `default`, `acceptEdits`, `auto`, `dontAsk`, `plan`, `bypassPermissions`
-
-Set `permissionMode` at the root level of settings.json to change the default mode. Alternatively, create a shell alias:
-```bash
-echo 'alias claude="claude --permission-mode bypassPermissions"' >> ~/.bashrc
-```
-
 ### Memory Files (CLAUDE.md) Hierarchy
 1. **Global:** `~/.claude/CLAUDE.md` — applies to all projects
 2. **Project:** `./CLAUDE.md` — project-specific context (git-tracked)
 3. **Local:** `.claude/CLAUDE.local.md` — personal project overrides (gitignored)
 
 Use the `#` prefix in interactive mode to quickly add to memory: `# Always use 2-space indentation`.
-
-## Plan Mode Workflow (Requirements Analysis)
-
-Use `--permission-mode plan` when you need Claude Code to **analyze requirements and design a solution** before writing code. This is ideal for new projects or major features.
-
-### Starting Plan Mode
-
-```bash
-# Via tmux (interactive — required for plan mode's interview questions)
-tmux new-session -d -s plan -x 140 -y 40
-tmux send-keys -t plan 'cd /path/to/project && claude --permission-mode plan' Enter
-sleep 5 && tmux send-keys -t plan Enter  # Handle trust dialog
-```
-
-### Plan Mode Interview
-
-Plan mode presents a **multi-step interview** before generating a plan. The interview uses a checklist UI:
-
-```
-←  ☐ Backend  ☐ Frontend  ☐ Database  ☐ Data Source  ✔ Submit  →
-```
-
-- Each step asks a question (e.g., "后端技术栈偏好？")
-- Default options are numbered (select with Enter)
-- Custom answers via "Type something" option
-- "Skip interview and plan immediately" bypasses all questions
-
-**Handling the interview via tmux:**
-```bash
-# Answer each question with Enter (selects default)
-tmux send-keys -t plan Enter  # Select default for each question
-# Repeat for each interview step
-```
-
-### Plan Generation & Approval
-
-After the interview, Claude Code:
-1. Searches the web for relevant information
-2. Generates a detailed technical plan
-3. Saves to `~/.claude/plans/<name>.md`
-4. Presents approval options:
-   - `1. Yes, and bypass permissions` — auto-approve all edits
-   - `2. Yes, manually approve edits` — require approval per edit
-   - `3. Tell Claude what to change` — request modifications
-
-**Sending approval via tmux:**
-```bash
-# Option 1: Send Enter to select "Yes, and bypass permissions" (default)
-tmux send-keys -t session Enter
-
-# Option 2: If Enter alone doesn't trigger implementation, send explicit text
-tmux send-keys -t session '是的，开始实施' Enter
-# or in English:
-tmux send-keys -t session 'Yes, start implementing' Enter
-```
-
-**Note:** After the plan is shown, Claude sometimes waits for explicit text confirmation rather than just Enter. If `Enter` doesn't start implementation, send a text response like "是的，开始实施".
-
-### Simplifying Requirements Mid-Session
-
-When the user wants to pivot from complex to simple requirements:
-
-1. **Exit current session**: `tmux send-keys -t session '/exit' Enter`
-2. **Clean up**: `rm -rf project/* && rm -rf ~/.claude/plans/*`
-3. **Write new simplified requirements** to `requirements.md`
-4. **Restart**: New tmux session + `claude --permission-mode plan`
-5. **Reference simplified requirements** in the prompt
-
-This is faster than trying to modify the existing plan.
-
-### Plan Mode vs Print Mode
-
-| Aspect | Plan Mode | Print Mode (`-p`) |
-|--------|-----------|-------------------|
-| Interactive interview | ✅ Yes | ❌ No |
-| Web search during planning | ✅ Yes | ❌ No |
-| Plan file generation | ✅ `~/.claude/plans/` | ❌ No |
-| Auto-implementation after approval | ✅ Yes | ❌ No |
-| Best for | New projects, architecture | One-shot tasks, fixes |
 
 ## Interactive Session: Slash Commands
 
@@ -476,7 +398,7 @@ This is faster than trying to modify the existing plan.
 | Command | Purpose |
 |---------|---------|
 | `/model [model]` | Switch models mid-session (use arrow keys to adjust effort) |
-| `/effort [level]` | Set reasoning effort: `low`, `medium`, `high`, `max`, or `auto` |
+| `/effort [level]` | Set reasoning effort: `low`, `medium`, `high`, `xhigh`, or `max` |
 | `/init` | Create a CLAUDE.md file for project memory |
 | `/memory` | Open CLAUDE.md for editing |
 | `/config` | Open interactive settings configuration |
@@ -552,85 +474,6 @@ When asked to create or modify database migrations:
 
 ### Pro Tip: "ultrathink"
 Use the keyword "ultrathink" in your prompt for maximum reasoning effort on a specific turn. This triggers the deepest thinking mode regardless of the current `/effort` setting.
-
-## Plan Mode (`--permission-mode plan`)
-
-Plan mode enters an **interactive interview** before generating a technical plan. It asks clarifying questions about tech stack choices, then generates a comprehensive plan before writing any code.
-
-### How Plan Mode Works
-
-1. Claude reads your prompt/project files
-2. Presents an **interview UI** with questions (backend, frontend, database, data source, etc.)
-3. You answer each question (arrow keys + Enter)
-4. Claude generates a detailed technical plan
-5. Plan is saved to `~/.claude/plans/<name>.md`
-6. Claude asks "Ready to code?" with options: execute, manual approve, or give feedback
-
-### Critical: Plan Mode Requires Interactive tmux
-
-**Plan mode does NOT work with print mode (`-p`).** The interview UI is a TUI component that requires an interactive terminal.
-
-```bash
-# ❌ WRONG - will timeout or fail
-claude -p "design a system" --permission-mode plan
-
-# ✅ CORRECT - use tmux interactive mode
-tmux send-keys -t session 'claude --permission-mode plan' Enter
-# Handle trust dialog
-sleep 5 && tmux send-keys -t session Enter
-# Send your prompt
-sleep 3 && tmux send-keys -t session 'Design a system for X' Enter
-# Monitor progress
-sleep 60 && tmux capture-pane -t session -p -S -100
-```
-
-### Plan Mode Interview Questions
-
-The interview typically asks about:
-- **Backend** tech stack (Python/Java/Node.js)
-- **Frontend** tech stack (React/Vue/Next.js)
-- **Database** preference (PostgreSQL/MySQL/MongoDB)
-- **Data sources** (existing API, need recommendations, mock data first)
-
-Navigate with arrow keys, select with Enter. The interview can be skipped with "Skip interview and plan immediately" option.
-
-### Trust Dialog Handling
-
-First time entering a directory triggers a trust dialog. In plan mode interactive session:
-```bash
-# After launching claude, wait and press Enter for "Yes, I trust this folder"
-sleep 5 && tmux send-keys -t session Enter
-```
-
-### Scope Control for Demos/Prototypes
-
-Claude Code tends to **over-engineer** by default (multi-tenant, Docker, Nginx, CI/CD). For demos or prototypes, explicitly constrain scope in the prompt:
-
-```
-This is a DEMO version. DO NOT include:
-- Multi-tenant isolation
-- Docker deployment
-- Nginx/reverse proxy
-- Complex authentication
-- CI/CD pipelines
-
-Only implement: [list core features]
-```
-
-### Monitoring Plan Generation
-
-Plan generation can take 2-5 minutes. Watch for:
-- `✢ Cooking…` — actively generating
-- `Plan(...)` with tool uses — reading files, web searching
-- `Ready to code?` — plan complete, asking for approval
-
-```bash
-# Check progress
-tmux capture-pane -t session -p -S -50
-
-# Look for "Ready to code?" prompt
-# Then send Enter to approve and start coding
-```
 
 ## PR Review Pattern
 
@@ -765,7 +608,7 @@ Configure in `.claude/settings.json` (project) or `~/.claude/settings.json` (glo
       "hooks": [{"type": "command", "command": "if echo \"$CLAUDE_TOOL_INPUT\" | grep -q 'rm -rf'; then echo 'Blocked!' && exit 2; fi"}]
     }],
     "Stop": [{
-      "hooks": [{"type": "command", "command": "echo 'Claude finished a response' >> /tmp/claude-activity.log"}]
+      "hooks": [{"type": "command", "command": "echo 'Claude finished a response' >> ~/.hermes/cache/scratch/claude-activity.log"}]
     }]
   }
 }
@@ -882,54 +725,13 @@ Use `/context` in interactive mode to see a colored grid of context usage. Key t
 10. **Start new sessions for distinct tasks** — sessions last 5 hours; fresh context is more efficient.
 11. **Use `--no-session-persistence`** in CI to avoid accumulating saved sessions on disk.
 
-## Troubleshooting: Claude Code Hangs/Times Out
-
-If Claude Code hangs or times out but the API works fine (verified via curl), the issue is likely a **plugin**:
-
-1. **Test with bare mode:** `claude --bare -p "say ok"` — if this works, a plugin is the culprit
-2. **Check plugins in settings:** `~/.claude/settings.json` → `enabledPlugins`
-3. **Disable plugins one by one** to identify the problematic one
-4. **Known issue:** `claude-mem@thedotmack` plugin can cause timeouts — disable it if present
-
-```bash
-# Quick diagnostic
-curl -s -o /dev/null -w "%{http_code}" \
-  -H "x-api-key: $ANTHROPIC_API_KEY" \
-  -H "anthropic-version: 2023-06-01" \
-  -H "content-type: application/json" \
-  -d '{"model":"claude-sonnet-4-20250514","max_tokens":10,"messages":[{"role":"user","content":"hi"}]}' \
-  "$ANTHROPIC_BASE_URL/v1/messages"
-
-# If API returns 200 but claude hangs, try:
-claude --bare -p "test"  # Works = plugin issue
-```
-
 ## Pitfalls & Gotchas
 
-1. **Root user cannot use bypassPermissions** — Claude Code blocks `--dangerously-skip-permissions` and `--permission-mode bypassPermissions` when running as root/sudo for security reasons. Error: `--dangerously-skip-permissions cannot be used with root/sudo privileges for security reasons`.
-   
-   **Workaround:** Create a non-root user and run Claude through that user:
-   ```bash
-   # Create user
-   useradd -m -s /bin/bash claudeuser
-   
-   # Copy Claude config
-   mkdir -p /home/claudeuser/.claude
-   cp ~/.claude/settings.json /home/claudeuser/.claude/
-   chown -R claudeuser:claudeuser /home/claudeuser/.claude
-   
-   # Run Claude as non-root user
-   su - claudeuser -c 'claude --permission-mode bypassPermissions'
-   
-   # Or add alias to ~/.bashrc
-   echo 'alias claude="su - claudeuser -c '\''claude --permission-mode bypassPermissions'\''"' >> ~/.bashrc
-   ```
-
-2. **Interactive mode REQUIRES tmux** — Claude Code is a full TUI app. Using `pty=true` alone in Hermes terminal works but tmux gives you `capture-pane` for monitoring and `send-keys` for input, which is essential for orchestration.
-2. **`--dangerously-skip-permissions` dialog defaults to "No, exit"** — you must send Down then Enter to accept. Print mode (`-p`) skips this entirely.
+1. **Interactive mode REQUIRES tmux** — Claude Code is a full TUI app. Using `pty=true` alone in Hermes terminal works but tmux gives you `capture-pane` for monitoring and `send-keys` for input, which is essential for orchestration.
+2. **The `--dangerously-skip-permissions` warning dialog defaults to "No, exit"** — that default is the safe answer; only send Down then Enter when you deliberately opted into the bypass in an isolated environment. Print mode (`-p`) skips the dialog entirely.
 3. **`--max-budget-usd` minimum is ~$0.05** — system prompt cache creation alone costs this much. Setting lower will error immediately.
 4. **`--max-turns` is print-mode only** — ignored in interactive sessions.
-5. **Claude may use `python` instead of `python3`** — on systems without a `python` symlink, Claude's bash commands will fail on first try but it self-corrects.
+5. **Claude may use `python` instead of `python`** — on systems without a `python` symlink, Claude's bash commands will fail on first try but it self-corrects.
 6. **Session resumption requires same directory** — `--continue` finds the most recent session for the current working directory.
 7. **`--json-schema` needs enough `--max-turns`** — Claude must read files before producing structured output, which takes multiple turns.
 8. **Trust dialog only appears once per directory** — first-time only, then cached.

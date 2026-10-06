@@ -10,6 +10,11 @@ metadata:
 
 # Tencent Docs Spreadsheet Access
 
+> ⚠️ **2026-10-06 更新**：本 skill 的 `tencent-docs-mcp-server` npm 方案已被官方 MCP 方案取代。
+> 请直接使用 `productivity/tencent-docs` skill（ClawHub liyang58/tencent-docs v1.0.31，
+> 走 docs.qq.com/openapi/mcp 官方端点 + mcporter，已配置好 Token，225 个工具可用）。
+> 以下旧内容仅作历史参考（浏览器抓取不可行的结论仍然有效）。
+
 ## TL;DR
 
 Use the `tencent-docs-mcp-server` MCP package. Do NOT attempt browser scraping — Tencent Docs renders sheet data on canvas elements, making DOM extraction impossible.

@@ -68,10 +68,10 @@ r = requests.get(f'{BASE}/openapi/v1/datasets', params={
 ~~使用 `modelscope.hub.api.HubApi.list_models(owner_or_group='modelscope')` 只能查单个 org。~~
 ~~Playwright 抓取首页因 snap Chromium AppArmor 限制不可用（ProcessSingleton socket 创建失败）。~~
 
-## 环境注意
-- 必须使用 hermes venv: `/root/.hermes/hermes-agent/venv/bin/python`
-- snap Chromium 因 AppArmor 限制无法启动（ProcessSingleton socket 目录创建失败）
-- 如果需要浏览器渲染，需安装 Playwright 自带的 Chromium（`playwright install chromium`，~167MB）
+## 环境注意（本机版·2026-10 更新）
+- 推送脚本已重写为**零依赖标准库版**（`~/.hermes/scripts/modelscope_daily_top10.py` / `modelscope_weekly.py`），任意 python3 直接可跑；cron 使用 hermes 运行时 python（tools python 3.14）
+- 数据源: 公开 OpenAPI `https://www.modelscope.cn/openapi/v1/{models,datasets}?sort=downloads|last_modified`；**page_size 上限 50**（100 返回 400）
+- （以下为服务器时期记录，已废弃）snap Chromium AppArmor 限制、`/root/.hermes/hermes-agent/venv/bin/python` 等
 
 ## 输出格式
 

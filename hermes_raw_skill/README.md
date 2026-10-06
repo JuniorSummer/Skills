@@ -8,6 +8,7 @@ Hermes Agent 预装的技能集合。
 - [🎨 创意内容生成](#creative)
 - [📊 数据科学](#data-science)
 - [⚙️ DevOps & 自动化](#devops)
+- [📧 邮件管理](#email)
 - [🎮 游戏](#gaming)
 - [🐙 GitHub 工作流](#github)
 - [🎬 媒体处理](#media)
@@ -16,6 +17,7 @@ Hermes Agent 预装的技能集合。
 - [💼 生产力工具](#productivity)
 - [🔴 红队测试](#red-teaming)
 - [📚 学术研究](#research)
+- [📱 社交媒体](#social-media)
 - [💻 软件开发](#software-development)
 
 ---
@@ -24,24 +26,25 @@ Hermes Agent 预装的技能集合。
 
 | 技能 | 描述 |
 |------|------|
-| [claude-code](./claude-code/) | Delegate coding tasks to Claude Code (Anthropic's CLI agent). Use for building features, refactoring, PR reviews, and iterative coding. Requires the claude CLI installed. |
-| [codex](./codex/) | Delegate coding tasks to OpenAI Codex CLI agent. Use for building features, refactoring, PR reviews, and batch issue fixing. Requires the codex CLI and a git repository. |
-| [hermes-agent](./hermes-agent/) | Complete guide to using and extending Hermes Agent — CLI usage, setup, configuration, spawning additional agents, gateway platforms, skills, voice, tools, profiles, and a concise contributor reference. Load this skill when helping users configure Hermes, troubleshoot issues, spawn agent instances, or make code contributions. |
-| [opencode](./opencode/) | Delegate coding tasks to OpenCode CLI agent for feature implementation, refactoring, PR review, and long-running autonomous sessions. Requires the opencode CLI installed and authenticated. |
+| [claude-code](./claude-code/) | Delegate coding to Claude Code CLI (features, PRs). |
+| [codex](./codex/) | Delegate coding to OpenAI Codex CLI (features, PRs). |
+| [hermes-agent](./hermes-agent/) | Use, configure, theme, extend, and orchestrate Hermes Agent. |
+| [opencode](./opencode/) | Delegate coding to OpenCode CLI (features, PR review). |
 
 ## 🎨 创意内容生成 {#creative}
 
 | 技能 | 描述 |
 |------|------|
-| [architecture-diagram](./architecture-diagram/) | Generate dark-themed SVG diagrams of software systems and cloud infrastructure as standalone HTML files with inline SVG graphics. Semantic component colors (cyan=frontend, emerald=backend, violet=database, amber=cloud/AWS, rose=security, orange=message bus), JetBrains Mono font, grid background. Best suited for software architecture, cloud/VPC topology, microservice maps, service-mesh diagrams, database + API layer diagrams, security groups, message buses — anything that fits a tech-infra deck with a dark aesthetic. If a more specialized diagramming skill exists for the subject (scientific, educational, hand-drawn, animated, etc.), prefer that — otherwise this skill can also serve as a general-purpose SVG diagram fallback. Based on Cocoon AI's architecture-diagram-generator (MIT). |
+| [architecture-diagram](./architecture-diagram/) | Dark-themed SVG architecture/cloud/infra diagrams as HTML. |
 | [ascii-art](./ascii-art/) | Generate ASCII art using pyfiglet (571 fonts), cowsay, boxes, toilet, image-to-ascii, remote APIs (asciified, ascii.co.uk), and LLM fallback. No API keys required. |
-| [ascii-video](./ascii-video/) | Production pipeline for ASCII art video — any format. Converts video/audio/images/generative input into colored ASCII character video output (MP4, GIF, image sequence). Covers: video-to-ASCII conversion, audio-reactive music visualizers, generative ASCII art animations, hybrid video+audio reactive, text/lyrics overlays, real-time terminal rendering. Use when users request: ASCII video, text art video, terminal-style video, character art animation, retro text visualization, audio visualizer in ASCII, converting video to ASCII art, matrix-style effects, or any animated ASCII output. |
-| [design-md](./design-md/) | Author, validate, diff, and export DESIGN.md files — Google's open-source format spec that gives coding agents a persistent, structured understanding of a design system (tokens + rationale in one file). Use when building a design system, porting style rules between projects, generating UI with consistent brand, or auditing accessibility/contrast. |
+| [ascii-video](./ascii-video/) | ASCII video: convert video/audio to colored ASCII MP4/GIF. |
+| [baoyu-infographic](./baoyu-infographic/) | Infographics: 21 layouts x 21 styles (信息图, 可视化). |
+| [design-md](./design-md/) | Author/validate/export Google's DESIGN.md token spec files. |
 | [excalidraw](./excalidraw/) | Create hand-drawn style diagrams using Excalidraw JSON format. Generate .excalidraw files for architecture diagrams, flowcharts, sequence diagrams, concept maps, and more. Files can be opened at excalidraw.com or uploaded for shareable links. |
-| [manim-video](./manim-video/) | Production pipeline for mathematical and technical animations using Manim Community Edition. Creates 3Blue1Brown-style explainer videos, algorithm visualizations, equation derivations, architecture diagrams, and data stories. Use when users request: animated explanations, math animations, concept visualizations, algorithm walkthroughs, technical explainers, 3Blue1Brown style videos, or any programmatic animation with geometric/mathematical content. |
-| [p5js](./p5js/) | Production pipeline for interactive and generative visual art using p5.js. Creates browser-based sketches, generative art, data visualizations, interactive experiences, 3D scenes, audio-reactive visuals, and motion graphics — exported as HTML, PNG, GIF, MP4, or SVG. Covers: 2D/3D rendering, noise and particle systems, flow fields, shaders (GLSL), pixel manipulation, kinetic typography, WebGL scenes, audio analysis, mouse/keyboard interaction, and headless high-res export. Use when users request: p5.js sketches, creative coding, generative art, interactive visualizations, canvas animations, browser-based visual art, data viz, shader effects, or any p5.js project. |
-| [popular-web-designs](./popular-web-designs/) | > |
-| [songwriting-and-ai-music](./songwriting-and-ai-music/) | > |
+| [manim-video](./manim-video/) | Manim CE animations: 3Blue1Brown math/algo videos. |
+| [p5js](./p5js/) | p5.js sketches: gen art, shaders, interactive, 3D. |
+| [popular-web-designs](./popular-web-designs/) | 54 real design systems (Stripe, Linear, Vercel) as HTML/CSS. |
+| [songwriting-and-ai-music](./songwriting-and-ai-music/) | Songwriting craft and Suno AI music prompts. |
 
 ## 📊 数据科学 {#data-science}
 
@@ -53,9 +56,15 @@ Hermes Agent 预装的技能集合。
 
 | 技能 | 描述 |
 |------|------|
-| [dogfood](./dogfood/) | Systematic exploratory QA testing of web applications — find bugs, capture evidence, and generate structured reports |
+| [dogfood](./dogfood/) | Exploratory QA of web apps: find bugs, evidence, reports. |
 | [native-mcp](./native-mcp/) | Built-in MCP (Model Context Protocol) client that connects to external MCP servers, discovers their tools, and registers them as native Hermes Agent tools. Supports stdio and HTTP transports with automatic reconnection, security filtering, and zero-config tool injection. |
 | [webhook-subscriptions](./webhook-subscriptions/) | Create and manage webhook subscriptions for event-driven agent activation, or for direct push notifications (zero LLM cost). Use when the user wants external services to trigger agent runs OR push notifications to chats. |
+
+## 📧 邮件管理 {#email}
+
+| 技能 | 描述 |
+|------|------|
+| [himalaya](./himalaya/) | Himalaya CLI: IMAP/SMTP email from terminal. |
 
 ## 🎮 游戏 {#gaming}
 
@@ -68,7 +77,7 @@ Hermes Agent 预装的技能集合。
 
 | 技能 | 描述 |
 |------|------|
-| [codebase-inspection](./codebase-inspection/) | Inspect and analyze codebases using pygount for LOC counting, language breakdown, and code-vs-comment ratios. Use when asked to check lines of code, repo size, language composition, or codebase stats. |
+| [codebase-inspection](./codebase-inspection/) | Inspect codebases w/ pygount: LOC, languages, ratios. |
 | [github-auth](./github-auth/) | Set up GitHub authentication for the agent using git (universally available) or the gh CLI. Covers HTTPS tokens, SSH keys, credential helpers, and gh auth — with a detection flow to pick the right method automatically. |
 | [github-code-review](./github-code-review/) | Review code changes by analyzing git diffs, leaving inline comments on PRs, and performing thorough pre-push review. Works with gh CLI or falls back to git + GitHub REST API via curl. |
 | [github-issues](./github-issues/) | Create, manage, triage, and close GitHub issues. Search existing issues, add labels, assign people, and link to PRs. Works with gh CLI or falls back to git + GitHub REST API via curl. |
@@ -79,10 +88,11 @@ Hermes Agent 预装的技能集合。
 
 | 技能 | 描述 |
 |------|------|
-| [gif-search](./gif-search/) | Search and download GIFs from Tenor using curl. No dependencies beyond curl and jq. Useful for finding reaction GIFs, creating visual content, and sending GIFs in chat. |
+| [gif-search](./gif-search/) | Search/download GIFs from Tenor via curl + jq. |
 | [heartmula](./heartmula/) | Set up and run HeartMuLa, the open-source music generation model family (Suno-like). Generates full songs from lyrics + tags with multilingual support. |
+| [songsee](./songsee/) | Audio spectrograms/features (mel, chroma, MFCC) via CLI. |
 | [spotify](./spotify/) | Control Spotify — play music, search the catalog, manage playlists and library, inspect devices and playback state. Loads when the user asks to play/pause/queue music, search tracks/albums/artists, manage playlists, or check what's playing. Assumes the Hermes Spotify toolset is enabled and `hermes auth spotify` has been run. |
-| [youtube-content](./youtube-content/) | > |
+| [youtube-content](./youtube-content/) | YouTube transcripts to summaries, threads, blogs. |
 
 ## 🧠 MLOps & 模型训练 {#mlops}
 
@@ -106,7 +116,7 @@ Hermes Agent 预装的技能集合。
 
 | 技能 | 描述 |
 |------|------|
-| [obsidian](./obsidian/) | Read, search, and create notes in the Obsidian vault. |
+| [obsidian](./obsidian/) | Read, search, create, and edit notes in the Obsidian vault. |
 
 ## 💼 生产力工具 {#productivity}
 
@@ -114,35 +124,46 @@ Hermes Agent 预装的技能集合。
 |------|------|
 | [agent-config-export](./agent-config-export/) | Export AI agent config as a sanitized read-only package. |
 | [airtable](./airtable/) | Airtable REST API via curl. Records CRUD, filters, upserts. |
-| [apple-notes](./apple-notes/) | Manage Apple Notes via the memo CLI on macOS (create, view, search, edit). |
-| [apple-reminders](./apple-reminders/) | Manage Apple Reminders via remindctl CLI (list, add, complete, delete). |
+| [apple-notes](./apple-notes/) | Manage Apple Notes via memo CLI: create, search, edit. |
+| [apple-reminders](./apple-reminders/) | Apple Reminders via remindctl: add, list, complete. |
 | [blocked-page-recovery](./blocked-page-recovery/) | Use when a fetch fails: 403/429, paywall, WAF, bot wall. |
 | [box](./box/) | Box manages cloud files, sharing, search, and metadata. |
 | [claude-code-plugins](./claude-code-plugins/) | Install, manage, and troubleshoot Claude Code plugins from GitHub marketplaces. Covers marketplace setup, plugin installation, common errors, and workarounds. |
 | [claude-design](./claude-design/) | Design one-off HTML artifacts (landing, deck, prototype). |
 | [cms-find-skills](./cms-find-skills/) | 用于"安装 Skill / 下载 Skill / 找一个能做 X 的 Skill / 把某个 Skill 装到本地 / 列出平台 Skill"。从 CMS 平台搜索已有 Skill 并按 downloadUrl 下载 ZIP 解压到本地 ~/.claude/skills。仅负责查找与安装，不负责创建或发布 |
+| [coding-agent-delegation](./coding-agent-delegation/) | Use when delegating work to a coding agent; verify results. |
 | [competitor-news-monitor](./competitor-news-monitor/) | Watch named companies for material news; cited digests. |
 | [computer-use](./computer-use/) | Drive the desktop background-first; escalate on signal. |
+| [delegated-agent-runs](./delegated-agent-runs/) | Use when delegating a long job to an agent CLI. |
+| [delegating-to-coding-agents](./delegating-to-coding-agents/) | Use when delegating work to a coding-agent CLI. |
 | [document-to-action-items](./document-to-action-items/) | Extract cited obligations, deadlines, tasks from documents. |
 | [docx](./docx/) | Create, read, edit, template, and review Word .docx files. |
 | [email-inbox-triage](./email-inbox-triage/) | Triage an inbox: prioritize threads, draft replies safely. |
+| [feishu-docs](./feishu-docs/) | Use when the user links a Feishu doc or 智能纪要. |
 | [feynman-coach](./feynman-coach/) | | |
-| [findmy](./findmy/) | Track Apple devices and AirTags via FindMy.app on macOS using AppleScript and screen capture. |
+| [findmy](./findmy/) | Track Apple devices/AirTags via FindMy.app on macOS. |
 | [github](./github/) | GitHub via gh CLI: PRs, issues, reviews, repos, auth. |
-| [google-workspace](./google-workspace/) | Gmail, Calendar, Drive, Contacts, Sheets, and Docs integration for Hermes. Uses Hermes-managed OAuth2 setup, prefers the Google Workspace CLI (`gws`) when available for broader API coverage, and falls back to the Python client libraries otherwise. |
+| [google-workspace](./google-workspace/) | Gmail, Calendar, Drive, Docs, Sheets via gws CLI or Python. |
 | [grounded-citations](./grounded-citations/) | Ground answers and documents in cited, verifiable sources. |
 | [hermes-agent-skill-authoring](./hermes-agent-skill-authoring/) | Author in-repo SKILL.md files: frontmatter and structure. |
+| [hermes-migration](./hermes-migration/) | Use when migrating a Hermes install between machines or cutting jobs over. |
 | [humanizer](./humanizer/) | Humanize text: strip AI-isms and add real voice. |
+| [hyperframes](./hyperframes/) | Render MP4/WebM videos from HTML compositions. |
 | [imessage](./imessage/) | Send and receive iMessages/SMS via the imsg CLI on macOS. |
 | [inspecting-hermes-desktop-dom](./inspecting-hermes-desktop-dom/) | Read the live Hermes desktop DOM/CSS over CDP. |
 | [kaze-12-prompts](./kaze-12-prompts/) | 12 个通用 AI 提示词模板库,覆盖 5 大场景(问清问题/学习/解决问题/决策/认识自己)。当用户需要理清困惑、学习新概念、拆解优秀案例、研究陌生领域、核查事实、解决复杂问题、做决策、挖掘天赋、规划人生时,自动推荐并生成对应 prompt 模板。触发信号:苏格拉底提问、双层解释、反向拆解、横纵分析、事实核查、专家会诊、第一性原理、跨领域借解、钢人论证、最小实验、天赋挖掘、人生设计,以及"帮我理清/讲讲/解释下/怎么选/纠结/选哪个/学一下/分析这个/靠谱吗/真的假的/我适合什么"等相近表达。命中意图时先推荐模板,用户确认后替换【】占位符输出完整可复制 prompt。 |
 | [knowledge-base](./knowledge-base/) | (无描述) |
 | [linear](./linear/) | Manage Linear issues, projects, and teams via the GraphQL API. Create, update, search, and organize issues. Uses API key auth (no OAuth needed). All operations via curl — no dependencies. |
+| [mac-hardware-verification](./mac-hardware-verification/) | Use when verifying a used Mac or its hardware health. |
+| [macos-host-provisioning](./macos-host-provisioning/) | Use when setting up a Mac host or installing without admin. |
+| [macos-local-dev-stack](./macos-local-dev-stack/) | Use when installing tools on a mac without admin rights. |
+| [maps](./maps/) | Geocode, POIs, routes, timezones via OpenStreetMap/OSRM. |
 | [meeting-action-items](./meeting-action-items/) | Turn meeting notes into cited decisions, owners, tickets. |
 | [node-inspect-debugger](./node-inspect-debugger/) | Debug Node.js via --inspect + Chrome DevTools Protocol CLI. |
 | [notes](./notes/) | (无描述) |
+| [notion](./notion/) | Notion API + ntn CLI: pages, databases, markdown, Workers. |
 | [pdf](./pdf/) | PDF files: create, read, merge, fill, OCR, edit text. |
-| [powerpoint](./powerpoint/) | Use this skill any time a .pptx file is involved in any way — as input, output, or both. This includes: creating slide decks, pitch decks, or presentations; reading, parsing, or extracting text from any .pptx file (even if the extracted content will be used elsewhere, like in an email or summary); editing, modifying, or updating existing presentations; combining or splitting slide files; working with templates, layouts, speaker notes, or comments. Trigger whenever the user mentions \"deck,\" \"slides,\" \"presentation,\" or references a .pptx filename, regardless of what they plan to do with the content afterward. If a .pptx file needs to be opened, created, or touched, use this skill. |
+| [powerpoint](./powerpoint/) | Create, read, edit .pptx decks with python-pptx. |
 | [product-price-monitor](./product-price-monitor/) | Watch product, flight, or listing prices; alert on target. |
 | [python-debugpy](./python-debugpy/) | Debug Python: pdb REPL + debugpy remote (DAP). |
 | [reddit-reading](./reddit-reading/) | Read Reddit: subreddits, search, threads, users. No browser. |
@@ -153,6 +174,7 @@ Hermes Agent 预装的技能集合。
 | [skills](./skills/) | (无描述) |
 | [spike](./spike/) | Throwaway experiments to validate an idea before build. |
 | [teams-meeting-pipeline](./teams-meeting-pipeline/) | Teams meeting summaries, job replay, Graph subscriptions. |
+| [verify-offline-html](./verify-offline-html/) | Use when verifying a self-contained HTML tool really works. |
 | [weekly-review-planning](./weekly-review-planning/) | Weekly reset: commitments, stalled work, next-week plan. |
 | [xlsx](./xlsx/) | Create, read, edit Excel .xlsx workbooks and CSVs. |
 
@@ -166,20 +188,27 @@ Hermes Agent 预装的技能集合。
 
 | 技能 | 描述 |
 |------|------|
-| [arxiv](./arxiv/) | Search and retrieve academic papers from arXiv using their free REST API. No API key needed. Search by keyword, author, category, or ID. Combine with web_extract or the ocr-and-documents skill to read full paper content. |
+| [arxiv](./arxiv/) | Search arXiv papers by keyword, author, category, or ID. |
+| [llm-wiki](./llm-wiki/) | Karpathy's LLM Wiki: build/query interlinked markdown KB. |
 | [polymarket](./polymarket/) | Query Polymarket prediction market data — search markets, get prices, orderbooks, and price history. Read-only via public REST APIs, no API key needed. |
 | [research-paper-writing](./research-paper-writing/) | End-to-end pipeline for writing ML/AI research papers — from experiment design through analysis, drafting, revision, and submission. Covers NeurIPS, ICML, ICLR, ACL, AAAI, COLM. Integrates automated experiment monitoring, statistical analysis, iterative writing, and citation verification. |
+
+## 📱 社交媒体 {#social-media}
+
+| 技能 | 描述 |
+|------|------|
+| [xurl](./xurl/) | X/Twitter via xurl CLI: raw post search, posting, DM, media. |
 
 ## 💻 软件开发 {#software-development}
 
 | 技能 | 描述 |
 |------|------|
 | [plan](./plan/) | Plan mode for Hermes — inspect context, write a markdown plan into the active workspace's `.hermes/plans/` directory, and do not execute the work. |
-| [requesting-code-review](./requesting-code-review/) | > |
+| [requesting-code-review](./requesting-code-review/) | Pre-commit review: security scan, quality gates, auto-fix. |
 | [subagent-driven-development](./subagent-driven-development/) | Use when executing implementation plans with independent tasks. Dispatches fresh delegate_task per task with two-stage review (spec compliance then code quality). |
-| [systematic-debugging](./systematic-debugging/) | Use when encountering any bug, test failure, or unexpected behavior. 4-phase root cause investigation — NO fixes without understanding the problem first. |
-| [test-driven-development](./test-driven-development/) | Use when implementing any feature or bugfix, before writing implementation code. Enforces RED-GREEN-REFACTOR cycle with test-first approach. |
+| [systematic-debugging](./systematic-debugging/) | 4-phase root cause debugging: understand bugs before fixing. |
+| [test-driven-development](./test-driven-development/) | TDD: enforce RED-GREEN-REFACTOR, tests before code. |
 | [writing-plans](./writing-plans/) | Use when you have a spec or requirements for a multi-step task. Creates comprehensive implementation plans with bite-sized tasks, exact file paths, and complete code examples. |
 
 ---
-*内置 skills，最后更新: 2026-09-27 22:00*
+*内置 skills，最后更新: 2026-10-06 23:51*

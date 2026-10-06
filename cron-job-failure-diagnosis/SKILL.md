@@ -47,6 +47,32 @@ Read the most recent output files. Each contains:
 | Script Output empty or error | Data source down or script bug | Test script manually: `python3 ~/.hermes/scripts/<script>.py` |
 | `last_delivery_error` has content | Feishu/Telegram channel issue | Check channel ID, bot permissions |
 | `last_status: "ok"` but no message | Silent output (`[SILENT]`) or delivery filtered | Check if prompt logic triggers silence incorrectly |
+| `RuntimeError: HTTP 403: ... subscription is required to use Go models` (opencode-go) | Provider/model 配置或订阅失效，全局性故障 | 见下方「Provider 403 全局故障」 |
+| `Script gate returned wakeAgent=false — agent skipped` | **不是失败**：脚本门控（无变化时不唤醒 LLM），属正常设计 | 无需处理 |
+
+## Provider 403 全局故障（opencode-go 等）
+
+特征：多个不同任务在同一时段**同时**失败，报同一个 403/subscription 错误 → 是 provider 侧全局问题，不是单个脚本 bug。
+
+排查顺序：
+
+1. 用 python 直接读 config.yaml 的真 key 做 curl 实测（Hermes 会在 tool 输出里把 key 显示成 `sk-xxx...yyy`，不要以为配置坏了）：
+
+```bash
+KEY=$(python3 -c "import yaml;print(yaml.safe_load(open('/root/.hermes/config.yaml'))['model']['api_key'])")
+curl -s -o /tmp/r.json -w "HTTP %{http_code}\n" -X POST "https://opencode.ai/zen/go/v1/chat/completions" \
+ -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" \
+ -H "x-opencode-session: ses_$(openssl rand -hex 12)" \
+ -d '{"model":"deepseek-v4-flash","messages":[{"role":"user","content":"hi"}],"max_tokens":5}'
+```
+
+opencode.ai 的 zen/go 端点**必须带 `x-opencode-session` 头**，否则返回 400 `MissingSessionID`（这不是 403 的原因）。
+
+2. 看失败的时间边界：`grep -n "OpenCode Go subscription" ~/.hermes/logs/agent.log | head -1` 拿到首次失败时间，和 config.yaml 的 mtime（`stat -c %y`）对比。config.yaml 会在每次 CLI 启动时被重写，mtime 新 ≠ key 被换过。
+3. **确认修复**：`cronjob(action='run', job_id=...)` 触发一个任务，约 60-90s 后读 `~/.hermes/cron/output/<job_id>/` 最新的 .md，看有没有 `## Response`（有=恢复）；再 grep agent.log 找 `Job '<id>': delivered to ...` 才算真投递成功。
+4. 一批任务同时挂掉后**不会自动重试**，需要逐个 `action='run'` 补跑。
+
+注意：cron 任务的 LLM 调用发生在 **gateway 进程**内（systemd hermes-gateway.service），CLI 能正常对话不等于 cron 能跑通——两者不同进程，要分别实测。
 
 ## Step 3: Manual Test
 
@@ -89,6 +115,24 @@ This reveals:
 - **Zero-sync weeks**: Scanned 0 = nothing changed that week (legitimate, not a failure)
 
 ### Key Insight: delivery_error ≠ job failure
+
+## 健康巡检误报：内容标记必须行首锚定
+
+自建巡检脚本用**子串**匹配「脚本报错」时，会把任务 **Prompt 说明文字**一并匹配到（输出 .md 里 Prompt 段与脚本输出同文件存放）：
+
+- prompt 写「忽略抓取日志（开始抓取/✅ 条记录/❌ 解析失败）」→ 含 `❌ 解析失败` 子串
+- prompt 写「⚠️ 数据源异常优先披露（…）」→ 含 `⚠️ 数据源异常` 子串
+
+后果：每个跑该脚本的任务**每次都误报**，天天刷屏。修法：**行首锚定 +（必要处）冒号**，例如 `(?m)^\s*❌\s*解析失败`、`(?m)^⚠️\s*数据源异常[：:]`。改完用「已知真实故障的旧输出」+「已知干净的输出」各跑一次做回归。
+
+## 手动补跑会占用「下一档」→ 某天整批推送消失
+
+`cronjob(action='run')` 补跑每日任务后，执行台账可能把这条补跑记在**次日的档期**（executions.scheduled_instant = 明天同一时刻）。调度器 `completed_occurrence()` 见该档期已 completed，**次日跳过不跑**，`next_run_at` 直跳后天。
+
+- 症状：某天早上该批推送集体消失（前一天补跑吃掉了今天的档期）
+- 排查：`sqlite3 ~/.hermes/cron/executions.db "select job_id,source,started_at,scheduled_instant from executions order by rowid desc limit 20"`，对比补跑时间 vs scheduled_instant
+- 处理：补跑后复查 `next_run_at` 是否被顶到后天，是则改回次日；否则等自然恢复
+- 预防：provider 故障先确认恢复再补跑；关键任务配 fallback provider（`fallback_providers: []` = 单点故障必挂，一批任务同时 403 全灭）
 
 ## Pitfalls
 

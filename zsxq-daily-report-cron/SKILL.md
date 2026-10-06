@@ -86,7 +86,7 @@ zsxq-cli 的 `group +topics` 没有起始时间参数，只有上界 `--end-time
   "schedule": "0 7 * * *",
   "deliver": "feishu",
   "script": "fetch_zsxq_data.py",
-  "workdir": "/root/zsxq-reports",
+  "workdir": "~/zsxq-reports",
   "enabled_toolsets": ["terminal", "file"],
   "prompt": "<LLM分析指令，包含数据说明、去重规则、日报格式、执行步骤>"
 }
@@ -103,6 +103,6 @@ zsxq-cli 的 `group +topics` 没有起始时间参数，只有上界 `--end-time
 
 - zsxq-cli 绝对路径 `/usr/bin/zsxq-cli`，不要直接用 `zsxq-cli`（cron 环境可能 PATH 不同）
 - 采集脚本放在 `~/.hermes/scripts/` 下（cron job 的 script 字段默认在此目录查找）
-- 日报 .md 文件保存在 `workdir` 指定的工作目录（如 `/root/zsxq-reports/`）
+- 日报 .md 文件保存在 `workdir` 指定的工作目录（如 `~/zsxq-reports/`）
 - 限流（429）：在脚本中对每个 API 调用加 try/except，失败时跳过继续
 - 内容中的 zsxq 特殊标记（`<e type="web" .../>`）和 URL 编码链接需在 prompt 中要求 LLM 清理
