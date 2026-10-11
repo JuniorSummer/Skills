@@ -123,6 +123,19 @@ if __name__ == "__main__":
 | 简单数据推送（如天气、股价） | 添加 `{"wakeAgent": false}` |
 | 脚本输出需要轻微格式化或错误处理 | Prompt 指令法 |
 | 需要 LLM 分析/总结的数据 | 保留默认行为 |
+| no_agent 任务（no_agent=True 的 cron job） | **不要加 wakeAgent 标记**（见下） |
+
+## no_agent 任务禁止 wakeAgent 标记（踩坑）
+
+`no_agent=True` 的任务里，脚本 stdout 末尾若带 `{"wakeAgent": false}`，调度器会把它解析为
+「脚本已自行发送」→ `delivery_outcome=suppressed`、Output 文件只留 "Status: silent
+(wakeAgent=false)"，**飞书什么都收不到**，但 `last_status=ok` 状态毫无异常。
+
+判别：查 `~/.hermes/cron/executions.db` 的 `delivery_outcome` 字段，`suppressed` 即此坑；
+Output 文件（`~/.hermes/cron/output/<job_id>/`）里只有状态头、没有消息正文也是信号。
+
+修复：删掉脚本里 `print('{"wakeAgent": false}')` 那行即可 —— no_agent 模式下 stdout
+本来就原样投递，标记是多余且有害的。
 | 需要 LLM 格式化但信息丢失 | 修复脚本或调整 prompt |
 
 ## 相关技能

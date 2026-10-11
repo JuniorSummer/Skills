@@ -31,11 +31,12 @@ source: self-generated
 - 解析方法见下方
 
 ### 3. AIHOT 大模型排行榜（AIHOT 共识分）
-- URL: `https://aihot.virxact.com/leaderboard`
-- 框架：Next.js SSR（React Server Components，`$L2a` 组件）
-- 解析方法：`__next_f.push` 中找 `"entries":[`，用 `json.JSONDecoder().raw_decode()` 直接从该位置解码 JSON 数组（entries 后跟 `,"basePath":"/leaderboard"`）。每条含 rank/previousRank/rankChange/name/provider/score/confidence。
-- 更新时间：RSC children 拆开形式 `"更新于 ","8月17日 12:49"`，正则 `r'"更新于\s*","([^"]+)"'`
-- ⚠️ 无专用 API（`/api/public/leaderboard` 返回 HTML 而非 JSON），只能解析 SSR 页面
+- URL: `https://aihot.news/leaderboard`（旧域名 aihot.virxact.com 2026-10-31 起只做跳转）
+- 框架：**2026-09 起已由 Next.js RSC 改为 React Router turbo-stream**（旧 `__next_f.push` 解析法从 2026-08-18 起 100% 失败）
+- **2026-10 页面又改了一层**：综合榜条目只剩 `{slug, rank, score, sourceCount, coverage}`，**模型名/厂商拆到了独立的模型元数据节点**（`{slug, name, provider, ...}`）→ 必须按 `slug` 关联；同时页面结构变成 `{board:{key:"overall"}, entries:[…30], filterEntries:[…]}`（总榜 + 长尾，要合并两个数组）。只认 `board.key == "overall"`（旧写法“把所有含 rank 的节点当总榜”现在会把 5 个分榜混在一起）
+- 解析方法：见下方「React Router turbo-stream」章节；完整实现见 `~/.hermes/scripts/benchmark_monitor.py:parse_aihot()`
+- 更新时间：结构里的 `run.generatedAt`（UTC ISO）→ +8 小时转北京时间
+- ⚠️ 排行榜**没有 API**（`/api/v1` 只覆盖 items / hot-topics / dailies 等，不含 leaderboard），只能解析 SSR 页面
 - 变化检测：新上榜 / 分数变化(≥0.1) / 排名变化(rank 不同) / 下榜
 
 ## 三榜单独立处理机制（2026-08-17 起）
@@ -96,17 +97,73 @@ for script in scripts:
     )
 ```
 
+### React Router turbo-stream（aihot.news/leaderboard 2026-09 起）
+
+页面数据在 `<script>window.__reactRouterContext.streamController.enqueue("[...]")</script>` 里，
+解出来是**扁平引用表**（不是嵌套 JSON）：
+
+- 表里每个元素是标量（字符串/数字）或容器（dict/list）
+- 容器里的**整数是索引**，指向表中另一元素；索引指向的标量就是字面量（**不要再解一次**）
+- 键名形如 `"_47"` 表示「键名 = table[47]」，值同理
+- 结构里**有循环引用**，递归必须设深度上限，否则爆栈/超时
+
+```python
+import re, json
+
+m = re.search(r'streamController\.enqueue\("(.*?)"\)\s*;?\s*</script>', html, re.DOTALL)
+table = json.loads(json.loads('"' + m.group(1) + '"'))   # 双层 json.loads 反转义
+
+def key_name(k):                       # "_47" -> table[47]
+    if isinstance(k, str) and k.startswith("_") and k[1:].isdigit():
+        i = int(k[1:])
+        if 0 <= i < len(table) and isinstance(table[i], str):
+            return table[i]
+    return k
+
+def resolve(ref, depth=0):             # 有界递归解引用
+    if depth > 8 or ref is None or isinstance(ref, (str, float, bool)):
+        return ref
+    if isinstance(ref, int):
+        if ref < 0 or ref >= len(table):
+            return None
+        node = table[ref]
+        return resolve(node, depth + 1) if isinstance(node, (dict, list)) else node
+    if isinstance(ref, dict):
+        return {key_name(k): resolve(v, depth + 1) for k, v in ref.items()}
+    if isinstance(ref, list):
+        return [resolve(x, depth + 1) for x in ref]
+    return None
+```
+
+**取数不要依赖固定下标**（索引会随数据量变化）：遍历整张表，对每个 dict 解引用后筛出
+`有 rank 且 model.name` 的字典即为榜单条目，再按 rank 排序。
+更新时间取 `generatedAt`（UTC ISO）→ +8 小时转北京时间。2026-09 实测：30 条、rank 1-30 连续。
+
 ## 添加新数据源的步骤
 
 1. 用 `curl -sL -A "Mozilla/5.0" <url>` 抓取 HTML 到本地文件
 2. 检查 SSR 框架类型：
    - `__next_f` / `__NEXT_DATA__` → Next.js
    - `$_TSR` / `$R[` → TanStack Router
+   - `streamController.enqueue` → React Router turbo-stream（扁平引用表，见上方章节）
    - 其他 → 检查 `<script>` 中的 JS 变量或 API 调用
 3. 用正则提取嵌入的 JSON 数据，注意编码处理
 4. 在 `benchmark_monitor.py` 中新增 `parse_xxx()` 函数 + 对比函数
 5. 在 `main()` 中加入抓取+对比逻辑
 6. 在 `format_output()` 中加入输出格式
+
+## 数据源异常必须显式上报（2026-09 教训）
+
+曾经 cron prompt 里写着“忽略脚本输出中的抓取日志（…/❌ 解析失败）”，结果 AIHOT 源挂了 6 周、44 次跑挂 41 次都没人发现——因为输出一直显示“无变化”、job 状态一直 ok。
+
+脚本侧（已实现）：`check_source()` 做健康校验，异常时输出标记 + 在正文最前面加警示行：
+- 绝对值：条目数 < `MIN_ENTRIES`（TB 15 / DSWE 30 / AIHOT 15）→ `条目数异常`
+- 相对值：比上次快照少一半以上 → `条目数骤降`
+- 输出 `__SOURCE_ERRORS__:AIHOT(解析失败)`，正文首行 `⚠️ 数据源异常：AIHOT(解析失败)`
+
+prompt 侧（已改）：绝不能再说“忽略 ❌ 解析失败”；要写明“⚠️ 数据源异常警示行必须作为回复第一行原样输出，即使三个区块都显示『无变化』也要输出，且不要自己编造数据补上”。
+
+排查口径：`grep -c "解析失败" ~/.hermes/cron/output/c658e4a56cce/*` 失败率不为 0 就要重抓 HTML 检查结构。
 
 ## 快照对比机制
 
@@ -131,6 +188,9 @@ for script in scripts:
 ## 常见问题
 
 - **curl 超时**：加 `--max-time 25` 和 `-A` UA 头
+- **解析失败会静默变成「无变化」（最大的坑）**：`parse_xxx()` 返回 None 时脚本塞空数据，该榜单照样输出「无变化」、job 状态还是 ok，不看日志根本发现不了。定期核对：`grep -c 解析失败 ~/.hermes/cron/output/<job_id>/*`，失败率不为 0 就重抓 HTML 检查结构。
+- **turbo-stream 递归必须有深度上限**：引用表里有循环引用，无界递归会直接卡死（实测 180s 超时）。
+- **页面改版后快照会“全部新增”**：解析恢复的那一次会把整张榜当成新上榜；跑一次让快照落盘，后续就正常对比了。
 - **Next.js 中文乱码**：见上方编码陷阱说明
 - **页面改版导致解析失败**：重新抓 HTML，检查 `__next_f.push` 或 `$R` 格式是否变化
 - **首次运行**：必须用 `--init` 参数，只存快照不对比

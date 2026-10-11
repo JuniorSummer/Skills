@@ -106,6 +106,15 @@ cronjob(
 2. **`terminal` return keys** — Inside `execute_code`, terminal returns `{'returncode': ..., 'stdout': ...}` not `{'exit_code': ..., 'output': ...}`. Mix them up → KeyError.
 3. **Git rename detection** — `git mv` or moving files then `git add -A` correctly detects renames (preserves history).
 4. **SSH vs HTTPS** — Use `git@github.com:user/repo.git` (SSH) for push. HTTPS requires token in URL.
+6. **非交互环境（cron/launchd）必须用无密码短语的密钥** —— 症状：抄本报 `Permission denied (publickey)`，但 `ssh -vT` 里明明有 `Server accepts key`，紧接着 `read_passphrase: can't open /dev/tty`。这说明 GitHub **认得**这把密钥，只是它**带密码短语而无人解锁**（agent 空、Keychain 无记录、cron 无 TTY）。排查先看：`ssh-keygen -y -f <key>`（报错=有密码短语）、`ssh-add -l`（空=没解锁）。修法：新建专用无密码密钥 + 仓库 Deploy Key（write） + ssh 别名：
+   ```bash
+   ssh-keygen -t ed25519 -N "" -C "hermes skills-sync cron (host)" -f ~/.ssh/id_ed25519_skills_sync
+   # ~/.ssh/config 加别名（避免影响其他 github 仓库的密钥选择）
+   # Host github-skills-sync / HostName github.com / User git
+   #   IdentityFile ~/.ssh/id_ed25519_skills_sync / IdentitiesOnly yes
+   ```
+   然后把脚本的 `REPO_URL` 改成 `git@github-skills-sync:Owner/Repo.git`，公钥加到 `https://github.com/Owner/Repo/settings/keys`（Deploy key，勾选 Allow write access）。
+7. **迁移/换主机后同步必挂**：旧机器的密钥/agent 不会跟过来；检查 `~/.ssh/config` 里有没有裸 `github.com` 的 Host 块（只有别名不算），以及有没有默认名密钥（`id_ed25519`/`id_rsa`）——都没有时非交互 clone 必失败。
 5. **Category uncategorized** — New skills without category mapping default to "productivity". Update `CATEGORY_MAP` when adding new built-in skills.
 
 ## Verification
