@@ -55,4 +55,4 @@ Hermes Agent 自带的预装 skills 位于 [hermes_raw_skill/](./hermes_raw_skil
 详见 [hermes_raw_skill/README.md](./hermes_raw_skill/README.md)。
 
 ---
-*自动同步自 Hermes Agent skills 目录，最后更新: 2026-10-11 22:32*
+*自动同步自 Hermes Agent skills 目录，最后更新: 2026-10-11 22:34*
