@@ -15,11 +15,11 @@ source: self-generated
    - 一次性提醒：绝对 ISO 时间 `2026-09-18T09:00:00`（本机 +08，调度器自动换算）
    - 周期性：自然语言（`every monday 9am`）或 cron 表达式
    - `deliver`：省略=创建时所在会话（origin，如当前微信 DM）；其他平台 `platform:chat_id`，如 `feishu:oc_...`
-3. **补钉 model/provider（关键步骤）**：工具新建/更新的任务 model、provider 为空（null），而用户标准是全部任务显式钉在 **glm-5.3-flash / opencode-go**（2026-10-08 起；此前为 deepseek-v4-flash，更早的标准可能再变，改前先问或看 jobs.json 现状）。用 CLI 补：
+3. **补钉 model/provider/reasoning_effort（关键步骤）**：工具新建/更新的任务 model、provider 为空（null），而用户标准是全部任务显式钉在 **deepseek-v4.1-flash / opencode-go / reasoning_effort=high**（2026-10-18 起；此前为 glm-5.3-flash / opencode-go，更早为 deepseek-v4-flash，标准会变，改前先看 jobs.json 现状）。「deepseek v4.1 high」= 模型 `deepseek-v4.1-flash` + `--reasoning-effort high` 两个参数，别去找不存在的 `deepseek-v4.1-high` 模型。用 CLI 补：
    ```bash
-   hermes cron edit <job_id> --model glm-5.3-flash --provider opencode-go
+   hermes cron edit <job_id> --model deepseek-v4.1-flash --provider opencode-go --reasoning-effort high
    ```
-   批量改全部任务：先从 `jobs.json` 读出全部 id 再 `for` 循环调 CLI（单次不会自动全改），改前先 `cp jobs.json jobs.json.bak-$(date +%Y%m%d-%H%M%S)` 备份。注意模型 id 小写带点（`glm-5.3-flash`），别照抄用户口述的 `GLM-5.3-Flash`。
+   批量改全部任务：先从 `jobs.json` 读出全部 id 再 `for` 循环调 CLI（单次不会自动全改），改前先 `cp jobs.json jobs.json.bak-$(date +%Y%m%d-%H%M%S)` 备份。注意模型 id 小写带点（`deepseek-v4.1-flash`），别照抄用户口述的 `DeepSeek V4.1`。其他 profile（如 xiaoxia）的 jobs.json 是独立文件，除非用户明确要求否则不动——先数一下各 profile 的 job 数量再决定。
    `hermes cron edit --help` 注明 model/provider 是 user-owned、agent 的 cronjob 工具无法设置 —— 只能走 CLI。
 4. **改其他字段**（prompt/schedule/name/deliver/script/skills 等）：`cronjob_manage action=update` 或 `hermes cron edit`。
 5. **验证落地**：重新 list，或直接解析存储文件确认字段：`~/.hermes/cron/jobs.json` 顶层 `jobs` 列表，每个 job 对象顶层就是 `model`/`provider` 字段。

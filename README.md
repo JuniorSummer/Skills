@@ -9,9 +9,8 @@ Hermes Agent 自定义技能集合。本仓库存储 Hermes Agent 在使用过�
 | 技能 | 描述 | 创建日期 |
 |------|------|---------|
 | [agenthub-harness-sync](./agenthub-harness-sync/) | Use when AgentHub sync or harness proposals are in scope. | 2026-10-14 |
-| [hermes-skills-github-sync](./hermes-skills-github-sync/) | Sync Hermes Agent skills to a GitHub repo with automatic categorization, README generation, and weekly cron job. Self-generated skills at root, pre-installed skills in subfolder. | 2026-10-11 |
+| [cron-job-management](./cron-job-management/) | 管理/创建/审计定时任务。model/provider 用 hermes cron edit CLI 设置。 | 2026-10-18 |
 | [kdocs-milestone-weekly-report](./kdocs-milestone-weekly-report/) | Use when 包1里程碑周报 needed. Kdocs sheet → fixed weekly report. | 2026-10-12 |
-| [third-party-api-integration](./third-party-api-integration/) | Use when integrating or migrating a third-party REST API. | 2026-10-11 |
 
 ## 📦 外部安装的 Skills
 
@@ -50,4 +49,4 @@ Hermes Agent 自带的预装 skills 位于 [hermes_raw_skill/](./hermes_raw_skil
 详见 [hermes_raw_skill/README.md](./hermes_raw_skill/README.md)。
 
 ---
-*自动同步自 Hermes Agent skills 目录，最后更新: 2026-10-18 22:00*
+*自动同步自 Hermes Agent skills 目录，最后更新: 2026-10-18 23:49*
