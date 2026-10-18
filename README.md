@@ -8,15 +8,10 @@ Hermes Agent 自定义技能集合。本仓库存储 Hermes Agent 在使用过�
 
 | 技能 | 描述 | 创建日期 |
 |------|------|---------|
-| [agenthub-harness-sync](./agenthub-harness-sync/) | Use when AgentHub sync or harness proposals are in scope. | 2026-10-05 |
-| [benchmark-leaderboard-monitor](./benchmark-leaderboard-monitor/) | | | 2026-10-08 |
-| [cron-job-management](./cron-job-management/) | 管理/创建/审计定时任务。model/provider 用 hermes cron edit CLI 设置。 | 2026-10-08 |
-| [cron-script-output-handling](./cron-script-output-handling/) | Cron Job 脚本输出处理模式 - 控制是否让 LLM 处理脚本输出，还是直接发送原始输出 | 2026-10-08 |
-| [hermes-skills-github-sync](./hermes-skills-github-sync/) | Sync Hermes Agent skills to a GitHub repo with automatic categorization, README generation, and weekly cron job. Self-generated skills at root, pre-installed skills in subfolder. | 2026-10-04 |
-| [kdocs-milestone-weekly-report](./kdocs-milestone-weekly-report/) | Use when 包1里程碑周报 needed. Kdocs sheet → fixed weekly report. | 2026-10-11 |
-| [monthly-report-organizer](./monthly-report-organizer/) | 整理月报 - 将零散的月度工作记录整理成结构化月报格式 | 2026-10-07 |
-| [project-milestone-reporting](./project-milestone-reporting/) | 统计项目里程碑状态，生成客户版进展周报（含风险清单）。 | 2026-10-11 |
-| [tencent-docs-spreadsheet](./tencent-docs-spreadsheet/) | Read and write Tencent Docs (腾讯文档) spreadsheets. Documents the correct approach (MCP server), pitfalls of scraping attempts, and available WPS alternatives. | 2026-10-06 |
+| [agenthub-harness-sync](./agenthub-harness-sync/) | Use when AgentHub sync or harness proposals are in scope. | 2026-10-14 |
+| [hermes-skills-github-sync](./hermes-skills-github-sync/) | Sync Hermes Agent skills to a GitHub repo with automatic categorization, README generation, and weekly cron job. Self-generated skills at root, pre-installed skills in subfolder. | 2026-10-11 |
+| [kdocs-milestone-weekly-report](./kdocs-milestone-weekly-report/) | Use when 包1里程碑周报 needed. Kdocs sheet → fixed weekly report. | 2026-10-12 |
+| [third-party-api-integration](./third-party-api-integration/) | Use when integrating or migrating a third-party REST API. | 2026-10-11 |
 
 ## 📦 外部安装的 Skills
 
@@ -55,4 +50,4 @@ Hermes Agent 自带的预装 skills 位于 [hermes_raw_skill/](./hermes_raw_skil
 详见 [hermes_raw_skill/README.md](./hermes_raw_skill/README.md)。
 
 ---
-*自动同步自 Hermes Agent skills 目录，最后更新: 2026-10-11 22:34*
+*自动同步自 Hermes Agent skills 目录，最后更新: 2026-10-18 22:00*
