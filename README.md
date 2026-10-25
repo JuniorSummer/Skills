@@ -8,9 +8,8 @@ Hermes Agent 自定义技能集合。本仓库存储 Hermes Agent 在使用过�
 
 | 技能 | 描述 | 创建日期 |
 |------|------|---------|
-| [agenthub-harness-sync](./agenthub-harness-sync/) | Use when AgentHub sync or harness proposals are in scope. | 2026-10-14 |
+| [cron-job-failure-diagnosis](./cron-job-failure-diagnosis/) | Diagnose cron job failures by checking job status, analyzing output logs, and identifying root cause (script vs LLM vs delivery). | 2026-10-18 |
 | [cron-job-management](./cron-job-management/) | 管理/创建/审计定时任务。model/provider 用 hermes cron edit CLI 设置。 | 2026-10-18 |
-| [kdocs-milestone-weekly-report](./kdocs-milestone-weekly-report/) | Use when 包1里程碑周报 needed. Kdocs sheet → fixed weekly report. | 2026-10-12 |
 
 ## 📦 外部安装的 Skills
 
@@ -49,4 +48,4 @@ Hermes Agent 自带的预装 skills 位于 [hermes_raw_skill/](./hermes_raw_skil
 详见 [hermes_raw_skill/README.md](./hermes_raw_skill/README.md)。
 
 ---
-*自动同步自 Hermes Agent skills 目录，最后更新: 2026-10-18 23:49*
+*自动同步自 Hermes Agent skills 目录，最后更新: 2026-10-25 22:03*

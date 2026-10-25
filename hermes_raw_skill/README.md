@@ -136,6 +136,7 @@ Hermes Agent 预装的技能集合。
 | [computer-use](./computer-use/) | Drive the desktop background-first; escalate on signal. |
 | [delegated-agent-runs](./delegated-agent-runs/) | Use when delegating a long job to an agent CLI. |
 | [delegating-to-coding-agents](./delegating-to-coding-agents/) | Use when delegating work to a coding-agent CLI. |
+| [delivery-readiness-review](./delivery-readiness-review/) | Use when judging delivery progress from an issue log. |
 | [document-to-action-items](./document-to-action-items/) | Extract cited obligations, deadlines, tasks from documents. |
 | [docx](./docx/) | Create, read, edit, template, and review Word .docx files. |
 | [email-inbox-triage](./email-inbox-triage/) | Triage an inbox: prioritize threads, draft replies safely. |
@@ -158,7 +159,9 @@ Hermes Agent 预装的技能集合。
 | [macos-host-provisioning](./macos-host-provisioning/) | Use when setting up a Mac host or installing without admin. |
 | [macos-local-dev-stack](./macos-local-dev-stack/) | Use when installing tools on a mac without admin rights. |
 | [maps](./maps/) | Geocode, POIs, routes, timezones via OpenStreetMap/OSRM. |
+| [mcp-oauth-onboarding](./mcp-oauth-onboarding/) | Use when an MCP server needs OAuth or returns 401. |
 | [meeting-action-items](./meeting-action-items/) | Turn meeting notes into cited decisions, owners, tickets. |
+| [meeting-minutes-digest](./meeting-minutes-digest/) | Use when digesting meeting minutes daily or weekly. |
 | [node-inspect-debugger](./node-inspect-debugger/) | Debug Node.js via --inspect + Chrome DevTools Protocol CLI. |
 | [notes](./notes/) | (无描述) |
 | [notion](./notion/) | Notion API + ntn CLI: pages, databases, markdown, Workers. |
@@ -211,4 +214,4 @@ Hermes Agent 预装的技能集合。
 | [writing-plans](./writing-plans/) | Use when you have a spec or requirements for a multi-step task. Creates comprehensive implementation plans with bite-sized tasks, exact file paths, and complete code examples. |
 
 ---
-*内置 skills，最后更新: 2026-10-18 23:49*
+*内置 skills，最后更新: 2026-10-25 22:03*

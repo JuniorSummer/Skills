@@ -48,6 +48,7 @@ Read the most recent output files. Each contains:
 | `last_delivery_error` has content | Feishu/Telegram channel issue | Check channel ID, bot permissions |
 | `last_status: "ok"` but no message | Silent output (`[SILENT]`) or delivery filtered | Check if prompt logic triggers silence incorrectly |
 | `RuntimeError: HTTP 403: ... subscription is required to use Go models` (opencode-go) | Provider/model 配置或订阅失效，全局性故障 | 见下方「Provider 403 全局故障」 |
+| `RuntimeError: HTTP 401: This API key has expired... Create a new API key in OpenCode Console` | **key 过期**（非订阅、非限流）：opencode 侧作废了这把 key，重登不会续期 | 见下方「Provider key 过期（401 api_key_expired）」 |
 | `Script gate returned wakeAgent=false — agent skipped` | **不是失败**：脚本门控（无变化时不唤醒 LLM），属正常设计 | 无需处理 |
 
 ## Provider 403 全局故障（opencode-go 等）
@@ -125,6 +126,49 @@ This reveals:
 
 后果：每个跑该脚本的任务**每次都误报**，天天刷屏。修法：**行首锚定 +（必要处）冒号**，例如 `(?m)^\s*❌\s*解析失败`、`(?m)^⚠️\s*数据源异常[：:]`。改完用「已知真实故障的旧输出」+「已知干净的输出」各跑一次做回归。
 
+## Provider key 过期（401 api_key_expired）—— 当天整批推送全灭的头号原因
+
+特征：某天某个时刻起，**所有**走 LLM 的任务连续失败，报同一个 `HTTP 401 ... api_key_expired`；`mode: no-agent` 的任务（脚本 stdout 直投）和 monitor 任务**照常成功** → 可据此判定「不是调度坏了，是 LLM 凭证坏了」。
+
+判定与修复：
+
+1. 找断点：`grep -n "api_key_expired" ~/.hermes/logs/agent.log | head -3`，首条失败时间即 key 失效时刻。
+2. 量范围：`sqlite3 ~/.hermes/cron/executions.db "select status,count(*) from executions where started_at like '<今天>%' group by status;"` + `hermes cron doctor`（逐条列 last run failed）。
+3. 存活性实测（**不要**用 python yaml，Hermes 自带 python 无 pyyaml；直接解析 .env）：
+
+```bash
+KEY=$(grep -E "^OPENCODE_GO_API_KEY=" ~/.hermes/.env | cut -d= -f2- | tr -d '"'"'"' \r); echo "len=${#KEY}"
+curl -s -o /tmp/t.json -w "HTTP %{http_code}\n" -X POST "https://opencode.ai/zen/go/v1/chat/completions" \
+ -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" \
+ -H "x-opencode-session: ses_$(openssl rand -hex 12)" \
+ -d '{"model":"deepseek-v4.1-flash","messages":[{"role":"user","content":"hi"}],"max_tokens":5}'
+```
+
+空 KEY（`len=0`）会伪装成 `Go requires a credential`——那是提取失败，不是 key 坏。
+
+4. key 换新后**不需要重启网关**：agent.log 会出现 `Applied updated .env credentials for opencode-go` + `OpenAI client created (env_credential_refresh)`，随后 `auth.json` 的 credential_pool 条目由 `last_status=exhausted` 变回 `ok`。
+5. `fallback_providers: []` = 单点故障，一把 key 过期全灭。想抗这个就配 fallback。
+
+### 验证 cron 是否真恢复：用一次性探头 job（零副作用）
+
+不要拿真实任务试（会真推送、可能动档期）。建一个远期调度、`--deliver local` 的临时 job，手动触发看输出，然后删掉：
+
+```bash
+hermes cron create "0 3 1 1 *" "Reply with exactly: CRON-LLM-OK" --name TEMP-probe --deliver local
+hermes cron run <id>            # 等下一次 tick（~10-60s）
+# 读 ~/.hermes/cron/output/<id>/*.md，出现 '## Response' + 正确内容 = LLM 链路通了
+hermes cron remove <id>; rm -rf ~/.hermes/cron/output/<id>
+```
+
+判读：输出只有 header+script、`## Response` 下是 `(No response generated)` 或文件仅 ~1350 字节 = 仍失败；正常带 Response 的输出 1900+ 字节。
+
+### 一次性任务（repeat 1/1）失败即永久丢失
+
+one-shot 任务**即便运行失败也照样消耗掉唯一档期**：jobs.json 里 `repeat.completed` +1、`state=completed`、`enabled=false`、`next_run_at=null`。事后 `hermes cron doctor` 里都看不见它（因为已不活跃）。
+
+- 排查时别只看 active 任务：失败当天要 `select job_id,source,started_at,status from executions where started_at like '<今天>%'`，再去 jobs.json 里按 id 捞名字（活跃列表可能已经不显示它了）。
+- 补救：同主题若还有 `提前1天/提前7天` 之类的姊妹任务，通常能兜住；没有就只能手动补或重建。
+
 ## 手动补跑会占用「下一档」→ 某天整批推送消失
 
 `cronjob(action='run')` 补跑每日任务后，执行台账可能把这条补跑记在**次日的档期**（executions.scheduled_instant = 明天同一时刻）。调度器 `completed_occurrence()` 见该档期已 completed，**次日跳过不跑**，`next_run_at` 直跳后天。
@@ -132,9 +176,31 @@ This reveals:
 - 症状：某天早上该批推送集体消失（前一天补跑吃掉了今天的档期）
 - 排查：`sqlite3 ~/.hermes/cron/executions.db "select job_id,source,started_at,scheduled_instant from executions order by rowid desc limit 20"`，对比补跑时间 vs scheduled_instant
 - 处理：补跑后复查 `next_run_at` 是否被顶到后天，是则改回次日；否则等自然恢复
-- 预防：provider 故障先确认恢复再补跑；关键任务配 fallback provider（`fallback_providers: []` = 单点故障必挂，一批任务同时 403 全灭）
+- 预防：provider 故障先确认恢复再补跑；关键任务配 fallback provider（`fallback_providers: []` = 单点故障必挂，一批任务同时 403/401 全灭）
+- **先验版本再补跑**：新版手动补跑在台账记 `source='direct'` 且 `scheduled_instant` 为空，而 `completed_occurrence()` 对空 instant 直接返回 False → **不吃档期**（补前后 `next_run_at` 不变）。核实：`sqlite3 ~/.hermes/cron/executions.db "select source,status,scheduled_instant from executions where job_id='<id>' order by rowid desc limit 3"`。空 = 老版本已修，放心补；若是「次日时刻」= 老行为，补后必须把 `next_run_at` 改回次日
+
+## 换环境/迁移后：旧环境的历史报错会被监测当成"新增问题"
+
+迁移（服务器→Mac、微信→飞书）后 jobs.json 会**原样带过旧环境的** `last_status` / `last_delivery_error` / `last_run_at`，而监测器的状态文件（如 `~/.config/cron-health/reported.json`）在新环境是全新的 → 首次巡检把几个月前、早已无关的失败当成新问题刷屏；`hermes cron doctor` 会一直重复报，直到该任务下次运行才自动清。
+
+**鉴别**（不用逐条修）：
+1. `last_run_at` 距今 >14 天的 status/delivery 报错，基本都是旧环境残留
+2. 看 `origin.platform` vs `deliver`：origin=weixin 但 deliver=feishu:oc_… → 报错里的目标渠道已废弃，报错不再可操作
+3. 用 executions.db 核对新环境真实投递：`select job_id,started_at,status,delivery_outcome from executions order by started_at desc limit 20`（`delivered` = 链路正常）
+4. 顺手查旧路径残留：`hermes cron doctor` 会报 `workdir not found: /root/xxx`、`script not found` —— 迁移后必然出现
+
+**修法：**
+1. 巡检脚本加时效守卫：`last_run_at` 早于 14 天的 status/deliver/fire 不报（未处理项）
+2. `"Interrupted by shutdown before terminal completion."` 这类错误 = 进程被外部终止（重启/关机/迁移），**不是任务故障**，只在 `--all` 里列出，不报警
+3. 清掉跨环境失效字段：备份 jobs.json 后置 `last_delivery_error=null`
+4. 想刷新 `last_status` 就补跑：`hermes cron run <id>`（会真的投递一条，顺便端到端验证）
+5. 旧路径 workdir 改成本机路径：`hermes cron edit <id> --workdir <new>`
+
+**验收**：`hermes cron doctor` → `✓ found no issues`；巡检 `--all` → `当前问题 0 项`。
 
 ## Pitfalls
+
+- **迁移后必查三类幽灵**：旧环境 last_status/last_delivery_error（污染监测）、旧机器绝对路径 workdir/script（真会坏）、监测状态文件全新（造成误报洪泛）
 
 - **`(No response generated)`** is the #1 cause of silent failures. The script runs fine, data is collected, but LLM doesn't produce output. Usually transient LLM API issues. Manual trigger usually fixes it.
 - When checking logs, compare file sizes: successful runs are ~1900+ bytes, failed `(No response)` runs are ~1450 bytes (just the header + script output, no response).
