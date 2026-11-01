@@ -85,6 +85,22 @@ git cat-file -e "main:<分支新增的文件路径>"   # 存在=已合入，可�
 - 合并后才会收敛。2026-10-05~10-14 就堆了 6 条这种分支
 - 排查手法：`git diff --stat main origin/<分支>:manifests/hermes-cron.md` —— 有差异 = 没合
 
+## 提案生命周期（2026-11-01 起，两段式）
+
+`memory/inbox/`（待合并）→ `memory/merged/`（已合并、只读历史）
+
+- 合并成功后**同一轮立即** `git mv` 到 `memory/merged/`，写入 `status: merged` / `merged_pr` / `merged_at`（实现在 `relocate_merged()`，一次运行只开一条 PR 并自动合并）。
+- `memory/merged/` 只读：评审时**原地**补 `reviewed_at` / `review_outcome`，不再二次移动。
+- 补充/修正已合并提案 → **新建**提案 + `supersedes: <旧 id>`；禁止改 merged/ 里的文件。
+- `memory/archive/` 已取消（从未真正启用），职责并入 merged/。
+- 缺 `source_harness` 时按文件名 `YYYYMMDD-<harness>-` 前缀推断（长名优先，避免 `deepseek` 抢 `deepseek-harness`），推断不出才报错跳过。
+- **坑**：空目录不被 git 跟踪 → 新克隆里 `memory/merged/` 可能不存在，`git mv` 会 `No such file or directory`；移动前必须 `mkdir -p`。
+
+## 推送内容要求
+
+- **合并/提案必须展示“内容”而不是只有文件名**（2026-11-01 用户要求）：每条提案要带一行「要点」，从 frontmatter 的 `content:` 字段或正文首段提取（80 字内）。实现在 `_proposal_points()` + `PROPOSAL_POINTS`，【提案提交】与【PR 合并】两段都要用。
+- 【PR 合并】段只汇总**脚本自己合的** PR（`merge_pr`）；用户在 GitHub 手动合的不入此段，只在【本地同步】里体现为 ff 拉取——别把“没显示”误判成 bug。
+
 ## 坑
 - **脚本里的 `run()` 返回 `CompletedProcess`**（用 `proc.returncode` / `proc.stdout`），不是 `(rc, out, err)` 元组；新增调用时别按元组解包。`run()` 现支持 `timeout=` 参数（默认 180）。
 - **不要加“harness 软件版本检查”**（2026-10-13 用户明确要求去掉）：只做 **AgentHub 内容**层面的检查（入口/memory/共享 Skill）；厂商版本跟 AgentHub 不相关，不进报告。

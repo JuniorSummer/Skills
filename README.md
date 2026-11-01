@@ -8,8 +8,13 @@ Hermes Agent 自定义技能集合。本仓库存储 Hermes Agent 在使用过�
 
 | 技能 | 描述 | 创建日期 |
 |------|------|---------|
-| [cron-job-failure-diagnosis](./cron-job-failure-diagnosis/) | Diagnose cron job failures by checking job status, analyzing output logs, and identifying root cause (script vs LLM vs delivery). | 2026-10-18 |
-| [cron-job-management](./cron-job-management/) | 管理/创建/审计定时任务。model/provider 用 hermes cron edit CLI 设置。 | 2026-10-18 |
+| [agenthub-change-publishing](./agenthub-change-publishing/) | Use when publishing changes to the AgentHub repo. | 2026-10-31 |
+| [agenthub-harness-sync](./agenthub-harness-sync/) | Use when AgentHub sync or harness proposals are in scope. | 2026-11-01 |
+| [agenthub-proposal-publishing](./agenthub-proposal-publishing/) | Use when syncing AgentHub to main or opening its PRs. | 2026-10-31 |
+| [agenthub-rule-proposals](./agenthub-rule-proposals/) | Use when publishing AgentHub rules or AGENTS.md proposals. | 2026-10-25 |
+| [ebbinghaus-memory-trainer](./ebbinghaus-memory-trainer/) | 艾宾浩斯记忆曲线训练系统 — 创建定时任务每天推送记忆训练内容，支持新学和复习的双向测试。覆盖设置跟踪文件、配置每日推送cron、处理图像型docx内容提取。 | 2026-10-25 |
+| [github-api-automation](./github-api-automation/) | 无 gh CLI 时用 GitHub REST API 自动建 PR、合并、清理分支。 | 2026-10-31 |
+| [hermes-skills-github-sync](./hermes-skills-github-sync/) | Sync Hermes Agent skills to a GitHub repo with automatic categorization, README generation, and weekly cron job. Self-generated skills at root, pre-installed skills in subfolder. | 2026-10-25 |
 
 ## 📦 外部安装的 Skills
 
@@ -48,4 +53,4 @@ Hermes Agent 自带的预装 skills 位于 [hermes_raw_skill/](./hermes_raw_skil
 详见 [hermes_raw_skill/README.md](./hermes_raw_skill/README.md)。
 
 ---
-*自动同步自 Hermes Agent skills 目录，最后更新: 2026-10-25 22:03*
+*自动同步自 Hermes Agent skills 目录，最后更新: 2026-11-01 22:01*

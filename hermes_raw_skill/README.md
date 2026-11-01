@@ -162,6 +162,7 @@ Hermes Agent 预装的技能集合。
 | [mcp-oauth-onboarding](./mcp-oauth-onboarding/) | Use when an MCP server needs OAuth or returns 401. |
 | [meeting-action-items](./meeting-action-items/) | Turn meeting notes into cited decisions, owners, tickets. |
 | [meeting-minutes-digest](./meeting-minutes-digest/) | Use when digesting meeting minutes daily or weekly. |
+| [microsoft-office](./microsoft-office/) | Create, read, and edit Word, PowerPoint, and Excel files. |
 | [node-inspect-debugger](./node-inspect-debugger/) | Debug Node.js via --inspect + Chrome DevTools Protocol CLI. |
 | [notes](./notes/) | (无描述) |
 | [notion](./notion/) | Notion API + ntn CLI: pages, databases, markdown, Workers. |
@@ -214,4 +215,4 @@ Hermes Agent 预装的技能集合。
 | [writing-plans](./writing-plans/) | Use when you have a spec or requirements for a multi-step task. Creates comprehensive implementation plans with bite-sized tasks, exact file paths, and complete code examples. |
 
 ---
-*内置 skills，最后更新: 2026-10-25 22:03*
+*内置 skills，最后更新: 2026-11-01 22:01*
